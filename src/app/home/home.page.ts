@@ -11,6 +11,12 @@ export class HomePage {
   private map: any;
   private currentLocation = {lat:0,lng:0};
 
+  public tempArr = [1,2];
+  public locationArr = [{lat:48.778409, lng:9.179252},
+    {lat:48.780926, lng:9.173456},
+    {lat:48.775174, lng:9.175459},
+    {lat:48.793704, lng:9.191112}]
+
   @ViewChild("map", { static: false })
   public mapElement: ElementRef;
   public constructor(private geolocation: Geolocation) {
@@ -44,6 +50,10 @@ export class HomePage {
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
     var ui = H.ui.UI.createDefault(this.map, defaultLayers);
     this.getLocation(this.map);
+    var img = ['../../../assets/images/ic_high.png','../../../assets/images/ic_medium.png','../../../assets/images/ic_low.png'];
+    for(let i=0; i<this.locationArr.length; i++){
+      this.addMarker(this.locationArr[i].lat, this.locationArr[i].lng, img[i%2]);
+    }
   }
 
   getLocation(map) {
@@ -74,5 +84,20 @@ export class HomePage {
     // Add the marker to the map:
     map.addObject(marker);
     map.setCenter({ lat: lat, lng: lng });
+  }
+
+  expandBikeList(){
+    for(let i=0; i<20; i++) {
+      this.tempArr.push(i+3);
+    }
+  }
+
+  addMarker(lat, lng, img){
+    var icon = new H.map.Icon(img);
+    // Create a marker using the previously instantiated icon:
+    var marker = new H.map.Marker({ lat: lat, lng: lng }, { icon: icon });
+
+    // Add the marker to the map:
+    this.map.addObject(marker);
   }
 }
