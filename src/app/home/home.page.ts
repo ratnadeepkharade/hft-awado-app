@@ -52,7 +52,7 @@ export class HomePage {
     this.getLocation(this.map);
     var img = ['../../../assets/images/ic_high.png','../../../assets/images/ic_medium.png','../../../assets/images/ic_low.png'];
     for(let i=0; i<this.locationArr.length; i++){
-      this.addMarker(this.locationArr[i].lat, this.locationArr[i].lng, img[i%2]);
+      this.addMarker(this.locationArr[i].lat, this.locationArr[i].lng, img[i%3]);
     }
   }
 
