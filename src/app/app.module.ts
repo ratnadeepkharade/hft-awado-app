@@ -12,6 +12,8 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
 
 import { HttpClientModule } from '@angular/common/http';
 
+import { RestService } from './rest.service';
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -25,6 +27,7 @@ import { HttpClientModule } from '@angular/common/http';
     Geolocation,
     StatusBar,
     SplashScreen,
+    RestService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

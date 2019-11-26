@@ -1,5 +1,10 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { RestService } from '../rest.service';
+import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+
 declare var H: any;
 @Component({
   selector: 'app-home',
@@ -9,6 +14,9 @@ declare var H: any;
 export class HomePage {
   private platform: any;
   private map: any;
+  bikes = [];
+  bikeApi: Observable<any>;
+
   private currentLocation = { lat: 0, lng: 0 };
 
   public is3DChecked = false;
@@ -29,20 +37,49 @@ export class HomePage {
   //@ViewChild("mapElement", { static: false })
   //public mapElement: ElementRef;
 
-  public constructor(private geolocation: Geolocation) {
+  constructor(private geolocation: Geolocation,
+    public restService: RestService,
+    public httpClient: HttpClient) {
+
     this.platform = new H.service.Platform({
       'apikey': 'tiVTgBnPbgV1spie5U2MSy-obhD9r2sGiOCbBzFY2_k'
     });
   }
 
-  public ngOnInit() { }
+  ngOnInit() {
+    this.getBikesList();
+  }
 
-  public ngAfterViewInit() {
+  ngAfterViewInit() {
     setTimeout(() => {
       this.loadmap("2D");
     }, 1000);
 
     window.addEventListener('resize', () => this.map.getViewPort().resize());
+  }
+
+  getBikesList() {
+    this.geolocation.getCurrentPosition(
+      {
+        maximumAge: 1000, timeout: 5000,
+        enableHighAccuracy: true
+      }
+    ).then((resp) => {
+      this.currentLocation.lat = resp.coords.latitude;
+      this.currentLocation.lng = resp.coords.longitude;
+      let url = 'http://193.196.52.237:8081/admin/bikes' + '?lat=' + this.currentLocation.lat + '&lng=' + this.currentLocation.lng;
+      const  headers = new  HttpHeaders().set("Authorization", "Bearer " + this.restService.getToken());
+      this.bikeApi = this.httpClient.get(url, {headers});
+      this.bikeApi
+        .subscribe((resp) => {
+          console.log('my data: ', resp);
+          this.bikes = resp.data;
+        }, (error) => console.log(error));
+    }, er => {
+      alert('Can not retrieve Location')
+    }).catch((error) => {
+      alert('Error getting location - ' + JSON.stringify(error))
+    });
   }
 
   loadmap(style) {
@@ -91,8 +128,8 @@ export class HomePage {
 
     mapSettings.setAlignment('top-right');
     zoom.setAlignment('left-top');
-    if(style === "3D") {
-      this.map.getViewModel().setLookAtData({tilt: 60});
+    if (style === "3D") {
+      this.map.getViewModel().setLookAtData({ tilt: 60 });
     }
     this.getLocation(this.map);
     var img = ['../../../assets/images/ic_high.png', '../../../assets/images/ic_medium.png', '../../../assets/images/ic_low.png'];

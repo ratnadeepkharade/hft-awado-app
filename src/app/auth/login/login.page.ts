@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
+import { RestService } from '../../rest.service';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -15,7 +17,7 @@ export class LoginPage implements OnInit {
   correctCredentials = false;
   loginApi: Observable<any>;
 
-  constructor(private router: Router, public httpClient: HttpClient) {
+  constructor(private router: Router, public httpClient: HttpClient, public restService: RestService) {
 
   }
 
@@ -35,6 +37,7 @@ export class LoginPage implements OnInit {
     this.loginApi
       .subscribe((data) => {
         console.log('my data: ', data);
+        this.restService.setToken(data.token);
         this.router.navigateByUrl('/home');
       }, (error) =>  {
         console.log(error);

@@ -21,17 +21,17 @@
 <ion-footer>
   <div class="bike-list-container">
     <ion-icon class="bike-list-expander" name="arrow-dropup-circle" (click)="expandBikeList()"></ion-icon>
-    <div class="bike-container" *ngFor="let i of tempArr">
+    <div class="bike-container" *ngFor="let bike of bikes">
       <div class="bike-name">
-        Bike 1
+        {{bike.name}}
       </div>
       <div class="battery-info">
         <div><ion-icon class="battery-icon" name="battery-charging"></ion-icon></div>
-        <div>100%</div>
+        <div>{{bike.batteryPercentage + " %"}}</div>
       </div>
       <div class="address-info">
-        <div class="disance">56m</div>
-        <div class="address">Schllingstrasse 129</div>
+        <div class="disance">{{bike.distance + "m"}}</div>
+        <div class="address">{{bike.address}}</div>
       </div>
     </div>
   </div>
