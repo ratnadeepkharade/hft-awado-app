@@ -9,16 +9,26 @@ declare var H: any;
 export class HomePage {
   private platform: any;
   private map: any;
-  private currentLocation = {lat:0,lng:0};
+  private currentLocation = { lat: 0, lng: 0 };
 
-  public tempArr = [1,2];
-  public locationArr = [{lat:48.778409, lng:9.179252},
-    {lat:48.780926, lng:9.173456},
-    {lat:48.775174, lng:9.175459},
-    {lat:48.793704, lng:9.191112}]
+  public is3DChecked = false;
 
-  @ViewChild("map", { static: false })
-  public mapElement: ElementRef;
+  public tempArr = [1, 2];
+  public locationArr = [{ lat: 48.778409, lng: 9.179252 },
+  { lat: 48.780926, lng: 9.173456 },
+  { lat: 48.775174, lng: 9.175459 },
+  { lat: 48.793704, lng: 9.191112 }]
+
+  @ViewChild("mapElement2d", { static: false })
+  public mapElement2d: ElementRef;
+
+  @ViewChild("mapElement3d", { static: false })
+  public mapElement3d: ElementRef;
+
+
+  //@ViewChild("mapElement", { static: false })
+  //public mapElement: ElementRef;
+
   public constructor(private geolocation: Geolocation) {
     this.platform = new H.service.Platform({
       'apikey': 'tiVTgBnPbgV1spie5U2MSy-obhD9r2sGiOCbBzFY2_k'
@@ -29,30 +39,62 @@ export class HomePage {
 
   public ngAfterViewInit() {
     setTimeout(() => {
-      this.loadmap();
+      this.loadmap("2D");
     }, 1000);
 
     window.addEventListener('resize', () => this.map.getViewPort().resize());
   }
 
-  loadmap() {
+  loadmap(style) {
     // Obtain the default map types from the platform object
+    var mapStyle = "raster";
+    var mapElement = "mapElement2d";
+    if (style === "3D") {
+      mapStyle = "vector";
+      mapElement = "mapElement3d";
+    }
     var defaultLayers = this.platform.createDefaultLayers();
     this.map = new H.Map(
-      this.mapElement.nativeElement,
-      defaultLayers.vector.normal.map,
+      this[mapElement].nativeElement,
+      defaultLayers[mapStyle].normal.map,
       {
-        zoom: 16,
-        center: { lat: 40.757601, lng: -73.985328 },
+        zoom: 17,
         pixelRatio: window.devicePixelRatio || 1
       }
     );
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
     var ui = H.ui.UI.createDefault(this.map, defaultLayers);
+    ui.removeControl("mapsettings");
+    // create custom one
+    var ms = new H.ui.MapSettingsControl({
+      baseLayers: [{
+        label: "3D", layer: defaultLayers.vector.normal.map
+      },{
+        label: "normal", layer: defaultLayers.raster.normal.map
+      }, {
+        label: "satellite", layer: defaultLayers.raster.satellite.map
+      }, {
+        label: "terrain", layer: defaultLayers.raster.terrain.map
+      }
+      ],
+      layers: [{
+        label: "layer.traffic", layer: defaultLayers.vector.normal.traffic
+      },
+      {
+        label: "layer.incidents", layer: defaultLayers.vector.normal.trafficincidents
+      }
+      ]
+    });
+    ui.addControl("customized", ms);
+    var mapSettings = ui.getControl('customized');
+var zoom = ui.getControl('zoom');
+
+mapSettings.setAlignment('top-right');
+zoom.setAlignment('top-left');
     this.getLocation(this.map);
-    var img = ['../../../assets/images/ic_high.png','../../../assets/images/ic_medium.png','../../../assets/images/ic_low.png'];
-    for(let i=0; i<this.locationArr.length; i++){
-      this.addMarker(this.locationArr[i].lat, this.locationArr[i].lng, img[i%3]);
+    var img = ['../../../assets/images/ic_high.png', '../../../assets/images/ic_medium.png', '../../../assets/images/ic_low.png'];
+    for (let i = 0; i < this.locationArr.length; i++) {
+      this.addMarker(this.locationArr[i].lat, this.locationArr[i].lng, img[i % 3]);
     }
   }
 
@@ -76,7 +118,7 @@ export class HomePage {
   }
 
   moveMapToGiven(map, lat, lng) {
-    
+
     var icon = new H.map.Icon('../../../assets/images/icon_map_currentLocation.png');
     // Create a marker using the previously instantiated icon:
     var marker = new H.map.Marker({ lat: lat, lng: lng }, { icon: icon });
@@ -86,18 +128,34 @@ export class HomePage {
     map.setCenter({ lat: lat, lng: lng });
   }
 
-  expandBikeList(){
-    for(let i=0; i<20; i++) {
-      this.tempArr.push(i+3);
+  expandBikeList() {
+    for (let i = 0; i < 20; i++) {
+      this.tempArr.push(i + 3);
     }
   }
 
-  addMarker(lat, lng, img){
+  addMarker(lat, lng, img) {
     var icon = new H.map.Icon(img);
     // Create a marker using the previously instantiated icon:
     var marker = new H.map.Marker({ lat: lat, lng: lng }, { icon: icon });
 
     // Add the marker to the map:
     this.map.addObject(marker);
+  }
+
+  toggle3DMaps() {
+    console.log(this.is3DChecked);
+    if (!this.is3DChecked) {
+      setTimeout(() => {
+        this.loadmap("3D");
+      }, 1000);
+    }
+  }
+
+  enable3DMaps() {
+    this.is3DChecked = true;
+    setTimeout(() => {
+      this.loadmap("3D");
+    }, 100);
   }
 }
