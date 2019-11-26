@@ -69,12 +69,12 @@ export class HomePage {
     var ms = new H.ui.MapSettingsControl({
       baseLayers: [{
         label: "3D", layer: defaultLayers.vector.normal.map
-      },{
-        label: "normal", layer: defaultLayers.raster.normal.map
       }, {
-        label: "satellite", layer: defaultLayers.raster.satellite.map
+        label: "Normal", layer: defaultLayers.raster.normal.map
       }, {
-        label: "terrain", layer: defaultLayers.raster.terrain.map
+        label: "Satellite", layer: defaultLayers.raster.satellite.map
+      }, {
+        label: "Terrain", layer: defaultLayers.raster.terrain.map
       }
       ],
       layers: [{
@@ -87,10 +87,13 @@ export class HomePage {
     });
     ui.addControl("customized", ms);
     var mapSettings = ui.getControl('customized');
-var zoom = ui.getControl('zoom');
+    var zoom = ui.getControl('zoom');
 
-mapSettings.setAlignment('top-right');
-zoom.setAlignment('top-left');
+    mapSettings.setAlignment('top-right');
+    zoom.setAlignment('left-top');
+    if(style === "3D") {
+      this.map.getViewModel().setLookAtData({tilt: 60});
+    }
     this.getLocation(this.map);
     var img = ['../../../assets/images/ic_high.png', '../../../assets/images/ic_medium.png', '../../../assets/images/ic_low.png'];
     for (let i = 0; i < this.locationArr.length; i++) {
