@@ -137,7 +137,9 @@ export class HomePage {
       this.addMarker(this.locationArr[i].lat, this.locationArr[i].lng, img[i % 3]);
     }
   }
-
+  getCurrentPosition(){
+    this.getLocation(this.map);
+  }
   getLocation(map) {
     this.geolocation.getCurrentPosition(
       {
@@ -159,7 +161,7 @@ export class HomePage {
 
   moveMapToGiven(map, lat, lng) {
 
-    var icon = new H.map.Icon('../../../assets/images/icon_map_currentLocation.png');
+    var icon = new H.map.Icon('../../../assets/images/ic_position.png');
     // Create a marker using the previously instantiated icon:
     var marker = new H.map.Marker({ lat: lat, lng: lng }, { icon: icon });
 
