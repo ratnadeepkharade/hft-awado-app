@@ -1,19 +1,22 @@
 import { Injectable } from '@angular/core';
+import { Storage } from '@ionic/storage';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RestService {
 
-  token: String;
-  
-  constructor() { }
+  constructor(private storage: Storage) { }
 
   setToken(token) {
-    this.token = token;
+    // set a key/value
+    this.storage.set('token', token);
   }
 
   getToken() {
-    return this.token;
+    this.storage.get('token').then((val) => {
+      console.log('token', val);
+      return val;
+    });
   }
 }

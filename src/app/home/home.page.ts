@@ -3,14 +3,17 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { RestService } from '../rest.service';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Storage } from '@ionic/storage';
 
 
 declare var H: any;
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
+
 export class HomePage {
   private platform: any;
   private map: any;
@@ -39,7 +42,8 @@ export class HomePage {
 
   constructor(private geolocation: Geolocation,
     public restService: RestService,
-    public httpClient: HttpClient) {
+    public httpClient: HttpClient,
+    private storage: Storage) {
 
     this.platform = new H.service.Platform({
       'apikey': 'tiVTgBnPbgV1spie5U2MSy-obhD9r2sGiOCbBzFY2_k'
@@ -59,22 +63,21 @@ export class HomePage {
   }
 
   getBikesList() {
-    this.geolocation.getCurrentPosition(
-      {
-        maximumAge: 1000, timeout: 5000,
-        enableHighAccuracy: true
-      }
-    ).then((resp) => {
+    this.geolocation.getCurrentPosition({
+      maximumAge: 1000, timeout: 5000,
+      enableHighAccuracy: true
+    }).then((resp) => {
       this.currentLocation.lat = resp.coords.latitude;
       this.currentLocation.lng = resp.coords.longitude;
-      let url = 'http://193.196.52.237:8081/admin/bikes' + '?lat=' + this.currentLocation.lat + '&lng=' + this.currentLocation.lng;
-      const  headers = new  HttpHeaders().set("Authorization", "Bearer " + this.restService.getToken());
-      this.bikeApi = this.httpClient.get(url, {headers});
-      this.bikeApi
-        .subscribe((resp) => {
+      this.storage.get('token').then((token) => {
+        let url = 'http://193.196.52.237:8081/bikes' + '?lat=' + this.currentLocation.lat + '&lng=' + this.currentLocation.lng;
+        const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
+        this.bikeApi = this.httpClient.get(url, { headers });
+        this.bikeApi.subscribe((resp) => {
           console.log('my data: ', resp);
-          this.bikes = resp.data;
+          this.bikes = resp;
         }, (error) => console.log(error));
+      });
     }, er => {
       alert('Can not retrieve Location')
     }).catch((error) => {
