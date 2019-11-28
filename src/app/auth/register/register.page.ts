@@ -33,7 +33,7 @@ export class RegisterPage implements OnInit {
       .subscribe((data) => {
         console.log('my data: ', data);
         this.restService.setToken(data.token);
-        this.router.navigateByUrl('/home');
+        this.router.navigateByUrl('/login');
       }, (error) => {
         console.log(error);
         this.correctCredentials = true;
