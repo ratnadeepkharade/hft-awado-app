@@ -39,7 +39,7 @@ export class LoginPage implements OnInit {
         console.log('my data: ', data);
         this.restService.setToken(data.token);
         this.router.navigateByUrl('/home');
-      }, (error) =>  {
+      }, (error) => {
         console.log(error);
         this.correctCredentials = true;
       });

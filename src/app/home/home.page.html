@@ -13,14 +13,21 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
+    
   <div #mapElement2d style="width: 100%; height: 100%" id="mapContainer" *ngIf="!is3DChecked"></div>
   <div #mapElement3d style="width: 100%; height: 100%" id="mapContainer" *ngIf="is3DChecked"></div>
   <!--div #mapElement style="width: 100%; height: 100%" id="mapContainer"></div-->
+  <ion-fab vertical="bottom" horizontal="end" (click)="getCurrentPosition()" slot="fixed">
+      <ion-fab-button>
+        <ion-icon name="locate"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
 </ion-content>
 
 <ion-footer>
+    
   <div class="bike-list-container">
-    <ion-icon class="bike-list-expander" name="arrow-dropup-circle" (click)="expandBikeList()"></ion-icon>
+    
     <div class="bike-container" *ngFor="let bike of bikes">
       <div class="bike-name">
         {{bike.name}}
