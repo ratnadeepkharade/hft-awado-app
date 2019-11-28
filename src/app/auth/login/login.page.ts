@@ -44,4 +44,9 @@ export class LoginPage implements OnInit {
         this.correctCredentials = true;
       });
   }
+  register() {
+    this.router.navigateByUrl('/register');
+
+
+  }
 }

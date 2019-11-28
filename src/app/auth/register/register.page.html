@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Awado</ion-title>
+    <ion-title>Register</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -14,8 +14,15 @@
 
         <div padding>
           <ion-item>
-            <ion-input type="text" [(ngModel)]="username" placeholder="Username"></ion-input>
+            <ion-input type="text" [(ngModel)]="firstName" placeholder="Enter First Name"></ion-input>
           </ion-item>
+          <ion-item>
+            <ion-input type="text" [(ngModel)]="lastName" placeholder="Enter Last Name"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-input type="text" [(ngModel)]="email" placeholder="Email"></ion-input>
+          </ion-item>
+
 
           <ion-item>
             <ion-input type="password" [(ngModel)]="password" placeholder="Password"></ion-input>
@@ -27,10 +34,7 @@
         </div>
 
         <div padding>
-          <ion-button size="large" expand="block" (click)="login()">Login</ion-button>
-        </div>
-        <div padding>
-          <ion-button size="large" expand="block" (click)="register()">Click here to Register</ion-button>
+          <ion-button size="large" expand="block" (click)="submitRegister()">Register</ion-button>
         </div>
       </ion-col>
     </ion-row>
