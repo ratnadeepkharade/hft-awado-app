@@ -12,8 +12,6 @@ import { RestService } from '../../rest.service';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
-  // username = "Bob@mail.com";
-  // password = "BobPassword";
   username = "";
   password = "";
   correctCredentials = false;
