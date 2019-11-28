@@ -23,6 +23,8 @@ export class HomePage {
   private currentLocation = { lat: 0, lng: 0 };
 
   public is3DChecked = false;
+  public isDetailsVisible = false;
+  public selectedBike ={};
 
   public tempArr = [1, 2];
   public locationArr = [{ lat: 48.778409, lng: 9.179252 },
@@ -223,4 +225,11 @@ export class HomePage {
       this.loadmap("3D");
     }, 100);
   }
+
+  showBikeDetails(bike) {
+
+    this.selectedBike=bike;
+    this.isDetailsVisible = true;
+  }
+  
 }
