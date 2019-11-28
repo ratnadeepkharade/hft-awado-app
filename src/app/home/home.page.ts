@@ -231,4 +231,5 @@ export class HomePage {
     this.selectedBike=bike;
     this.isDetailsVisible = true;
   }
+  
 }

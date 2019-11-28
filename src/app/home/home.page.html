@@ -48,10 +48,8 @@
 
   <div class="bike-details-container" *ngIf="isDetailsVisible">
     <div class="inner">
-      <div class="bike_name">
-        {{selectedBike.name}}
-      </div>
-      <div class="battery-info">
+
+      <!--  <div class="battery-info">
         <div>
           <ion-icon class="battery-icon" name="battery-charging"></ion-icon>
         </div>
@@ -60,9 +58,43 @@
       <div class="address-info">
         <div class="disance">{{selectedBike.distance + "m"}}</div>
         <div class="address">{{selectedBike.address}}</div>
-      </div>
+      </div> -->
       <div class="button-container">
         <ion-grid>
+          <ion-row>
+            <ion-col>
+              Bike Name
+            </ion-col>
+            <ion-col>
+              {{selectedBike.name}}
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              Battery Level
+            </ion-col>
+            <ion-col>
+
+              <ion-icon class="battery-icon" name="battery-charging"></ion-icon>
+              {{selectedBike.batteryPercentage + " %"}}
+            </ion-col>
+          </ion-row>
+          <ion-row>
+              <ion-col>
+                 Bike Location
+              </ion-col>
+              <ion-col>
+                  {{selectedBike.address}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                   Bike Distance
+                </ion-col>
+                <ion-col>
+                    {{selectedBike.distance + "m"}}
+                </ion-col>
+              </ion-row>
           <ion-row>
             <ion-col>
               <ion-button size="medium" expand="block" (click)="reserveBike()">Reserve</ion-button>
