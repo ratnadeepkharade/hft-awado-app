@@ -4,6 +4,7 @@ import { RestService } from '../rest.service';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
+import { ToastService } from '../services/toast.service';
 
 
 declare var H: any;
@@ -25,6 +26,7 @@ export class HomePage {
   public is3DChecked = false;
   public isDetailsVisible = false;
   public selectedBike ={id: 0};
+  public isBikeReserved= false;
 
   public tempArr = [1, 2];
   public locationArr = [{ lat: 48.778409, lng: 9.179252 },
@@ -45,7 +47,8 @@ export class HomePage {
   constructor(private geolocation: Geolocation,
     public restService: RestService,
     public httpClient: HttpClient,
-    private storage: Storage) {
+    private storage: Storage,
+    private toastService: ToastService) {
 
     this.platform = new H.service.Platform({
       'apikey': 'tiVTgBnPbgV1spie5U2MSy-obhD9r2sGiOCbBzFY2_k'
@@ -232,8 +235,7 @@ export class HomePage {
     this.selectedBike.id=bike.id;
     this.isDetailsVisible = true;
   }
-  reserveBike()
-  {
+  reserveBike() {
     //this.selectedBike=bikeS;
     this.storage.get('token').then((token) => {
       let url = 'http://193.196.52.237:8081/reservation' + '?bikeId=' + this.selectedBike.id;
@@ -241,10 +243,26 @@ export class HomePage {
       this.bikeApi = this.httpClient.get(url, { headers });
       this.bikeApi.subscribe((resp) => {
         console.log('my data: ', resp);
-        this.bikes = resp;
-      }, (error) => console.log(error));
+        this.isBikeReserved=true;
+        this.toastService.showToast("Reservation Successful!");
+      }, (error) => {
+        console.log(error)
+        this.toastService.showToast("Only one bike may be reserved or rented at a time")
+      });
     });
  
+
+  }
+  cancelReservation() {
+    this.storage.get('token').then((token) => {
+      let url = 'http://193.196.52.237:8081/reservation' + '?bikeId=' + this.selectedBike.id;
+      const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
+      this.bikeApi = this.httpClient.delete(url, { headers });
+      this.bikeApi.subscribe((resp) => {
+        console.log('my data: ', resp);
+        this.isBikeReserved=false;
+      }, (error) => console.log(error));
+    });
 
   }
   
