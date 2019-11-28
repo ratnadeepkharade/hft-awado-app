@@ -7,39 +7,73 @@
       Home
     </ion-title>
     <ion-item class="checkbox-wrapper">
-        <!--ion-checkbox class="checkbox" [(ngModel)]="is3DChecked" (click)="toggle3DMaps()"></ion-checkbox-->
-        <ion-label class="text" (click)="enable3DMaps()">3D</ion-label>
-      </ion-item>
+      <!--ion-checkbox class="checkbox" [(ngModel)]="is3DChecked" (click)="toggle3DMaps()"></ion-checkbox-->
+      <ion-label class="text" (click)="enable3DMaps()">3D</ion-label>
+    </ion-item>
   </ion-toolbar>
 </ion-header>
 <ion-content>
-    
+
   <div #mapElement2d style="width: 100%; height: 100%" id="mapContainer" *ngIf="!is3DChecked"></div>
   <div #mapElement3d style="width: 100%; height: 100%" id="mapContainer" *ngIf="is3DChecked"></div>
   <!--div #mapElement style="width: 100%; height: 100%" id="mapContainer"></div-->
   <ion-fab vertical="bottom" horizontal="end" (click)="getCurrentPosition()" slot="fixed">
-      <ion-fab-button>
-        <ion-icon name="locate"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
+    <ion-fab-button>
+      <ion-icon name="locate"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
 
 <ion-footer>
-    
-  <div class="bike-list-container">
-    
+
+  <div class="bike-list-container" *ngIf="!isDetailsVisible">
     <div class="bike-container" *ngFor="let bike of bikes">
-      <div class="bike-name">
-        {{bike.name}}
-      </div>
-      <div class="battery-info">
-        <div><ion-icon class="battery-icon" name="battery-charging"></ion-icon></div>
-        <div>{{bike.batteryPercentage + " %"}}</div>
-      </div>
-      <div class="address-info">
-        <div class="disance">{{bike.distance + "m"}}</div>
-        <div class="address">{{bike.address}}</div>
+      <div class="inner" (click)="showBikeDetails(bike)">
+        <div class="bike-name">
+          {{bike.name}}
+        </div>
+        <div class="battery-info">
+          <div>
+            <ion-icon class="battery-icon" name="battery-charging"></ion-icon>
+          </div>
+          <div>{{bike.batteryPercentage + " %"}}</div>
+        </div>
+        <div class="address-info">
+          <div class="disance">{{bike.distance + "m"}}</div>
+          <div class="address">{{bike.address}}</div>
+        </div>
       </div>
     </div>
+  </div>
+
+  <div class="bike-details-container" *ngIf="isDetailsVisible">
+    <div class="inner">
+      <div class="bike_name">
+        {{selectedBike.name}}
+      </div>
+      <div class="battery-info">
+        <div>
+          <ion-icon class="battery-icon" name="battery-charging"></ion-icon>
+        </div>
+        <div>{{selectedBike.batteryPercentage + " %"}}</div>
+      </div>
+      <div class="address-info">
+        <div class="disance">{{selectedBike.distance + "m"}}</div>
+        <div class="address">{{selectedBike.address}}</div>
+      </div>
+      <div class="button-container">
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-button size="medium" expand="block" (click)="reserveBike()">Reserve</ion-button>
+            </ion-col>
+            <ion-col>
+              <ion-button size="medium" expand="block" (click)="navigatetoBike()">Navigate</ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </div>
+
   </div>
 </ion-footer>
