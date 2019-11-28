@@ -24,7 +24,7 @@ export class HomePage {
 
   public is3DChecked = false;
   public isDetailsVisible = false;
-  public selectedBike ={};
+  public selectedBike ={id: 0};
 
   public tempArr = [1, 2];
   public locationArr = [{ lat: 48.778409, lng: 9.179252 },
@@ -229,7 +229,23 @@ export class HomePage {
   showBikeDetails(bike) {
 
     this.selectedBike=bike;
+    this.selectedBike.id=bike.id;
     this.isDetailsVisible = true;
+  }
+  reserveBike()
+  {
+    //this.selectedBike=bikeS;
+    this.storage.get('token').then((token) => {
+      let url = 'http://193.196.52.237:8081/reservation' + '?bikeId=' + this.selectedBike.id;
+      const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
+      this.bikeApi = this.httpClient.get(url, { headers });
+      this.bikeApi.subscribe((resp) => {
+        console.log('my data: ', resp);
+        this.bikes = resp;
+      }, (error) => console.log(error));
+    });
+ 
+
   }
   
 }
