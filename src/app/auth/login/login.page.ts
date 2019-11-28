@@ -12,8 +12,10 @@ import { RestService } from '../../rest.service';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
-  username = "Bob@mail.com";
-  password = "BobPassword";
+  // username = "Bob@mail.com";
+  // password = "BobPassword";
+  username = "";
+  password = "";
   correctCredentials = false;
   loginApi: Observable<any>;
 
@@ -39,7 +41,7 @@ export class LoginPage implements OnInit {
         console.log('my data: ', data);
         this.restService.setToken(data.token);
         this.router.navigateByUrl('/home');
-      }, (error) =>  {
+      }, (error) => {
         console.log(error);
         this.correctCredentials = true;
       });
