@@ -26,7 +26,7 @@ export class HomePage {
   { lat: 48.780926, lng: 9.173456 },
   { lat: 48.775174, lng: 9.175459 },
   { lat: 48.793704, lng: 9.191112 }]
-
+  public arrayLanLon = { lat: 0, lng: 0 };
   @ViewChild("mapElement2d", { static: false })
   public mapElement2d: ElementRef;
 
@@ -68,12 +68,15 @@ export class HomePage {
       this.currentLocation.lat = resp.coords.latitude;
       this.currentLocation.lng = resp.coords.longitude;
       let url = 'http://193.196.52.237:8081/admin/bikes' + '?lat=' + this.currentLocation.lat + '&lng=' + this.currentLocation.lng;
-      const  headers = new  HttpHeaders().set("Authorization", "Bearer " + this.restService.getToken());
-      this.bikeApi = this.httpClient.get(url, {headers});
+      const headers = new HttpHeaders().set("Authorization", "Bearer " + this.restService.getToken());
+      this.bikeApi = this.httpClient.get(url, { headers });
       this.bikeApi
         .subscribe((resp) => {
           console.log('my data: ', resp);
           this.bikes = resp.data;
+          //  console.log("rronjahja",this.bikes[0].lat);
+
+
         }, (error) => console.log(error));
     }, er => {
       alert('Can not retrieve Location')
@@ -81,6 +84,10 @@ export class HomePage {
       alert('Error getting location - ' + JSON.stringify(error))
     });
   }
+
+
+
+
 
   loadmap(style) {
     // Obtain the default map types from the platform object
@@ -99,6 +106,7 @@ export class HomePage {
         pixelRatio: window.devicePixelRatio || 1
       }
     );
+
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
     var ui = H.ui.UI.createDefault(this.map, defaultLayers);
     ui.removeControl("mapsettings");
@@ -132,12 +140,26 @@ export class HomePage {
       this.map.getViewModel().setLookAtData({ tilt: 60 });
     }
     this.getLocation(this.map);
-    var img = ['../../../assets/images/ic_high.png', '../../../assets/images/ic_medium.png', '../../../assets/images/ic_low.png'];
-    for (let i = 0; i < this.locationArr.length; i++) {
-      this.addMarker(this.locationArr[i].lat, this.locationArr[i].lng, img[i % 3]);
+    var img = ['../../../assets/images/100_percent.png', '../../../assets/images/75_percent.png', '../../../assets/images/50_percent.png','../../../assets/images/25_percent.png','../../../assets/images/0_percent.png'];
+    for (let i = 0; i < this.bikes.length; i++) {
+      if(this.bikes[i].batteryPercentage<100 &&this.bikes[i].batteryPercentage>=75){
+        this.addMarker(Number(this.bikes[i].lat), Number(this.bikes[i].lon), img[0]);
+      }
+      else if(this.bikes[i].batteryPercentage<75 &&this.bikes[i].batteryPercentage>=50){
+        this.addMarker(Number(this.bikes[i].lat), Number(this.bikes[i].lon), img[1]);
+      }
+      else if(this.bikes[i].batteryPercentage<50 &&this.bikes[i].batteryPercentage>=25){
+        this.addMarker(Number(this.bikes[i].lat), Number(this.bikes[i].lon), img[2]);
+      }else if(this.bikes[i].batteryPercentage<25 &&this.bikes[i].batteryPercentage>=0){
+        this.addMarker(Number(this.bikes[i].lat), Number(this.bikes[i].lon), img[3]);
+      }
+      //console.log("rroni", this.bikes[i].lat);
+     // this.addMarker(Number(this.bikes[i].lat), Number(this.bikes[i].lon), img[0]);
+      // this.addMarker(Number(48.78077362), 9.17782398, img[i % 3]);
+      //alert(this.bikes[i].lat);
     }
   }
-  getCurrentPosition(){
+  getCurrentPosition() {
     this.getLocation(this.map);
   }
   getLocation(map) {
@@ -161,7 +183,7 @@ export class HomePage {
 
   moveMapToGiven(map, lat, lng) {
 
-    var icon = new H.map.Icon('../../../assets/images/ic_position.png');
+    var icon = new H.map.Icon('../../../assets/images/current_location.png');
     // Create a marker using the previously instantiated icon:
     var marker = new H.map.Marker({ lat: lat, lng: lng }, { icon: icon });
 
