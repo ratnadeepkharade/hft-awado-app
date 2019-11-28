@@ -15,6 +15,7 @@ import { IonicStorageModule } from '@ionic/storage';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { RestService } from './rest.service';
+import { ToastService } from './services/toast.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -31,6 +32,7 @@ import { RestService } from './rest.service';
     StatusBar,
     SplashScreen,
     RestService,
+    ToastService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]
