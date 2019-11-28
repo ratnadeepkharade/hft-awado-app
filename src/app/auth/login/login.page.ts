@@ -38,6 +38,7 @@ export class LoginPage implements OnInit {
       .subscribe((data) => {
         console.log('my data: ', data);
         this.restService.setToken(data.token);
+        this.restService.isLoginPage = false;
         this.router.navigateByUrl('/home');
       }, (error) => {
         console.log(error);

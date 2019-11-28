@@ -15,7 +15,7 @@ import { RestService } from './rest.service';
 })
 export class AppComponent {
 
-
+  isLoginPage = false;
 
   public appPages = [
     {
@@ -36,9 +36,16 @@ export class AppComponent {
     private statusBar: StatusBar,
     public restService: RestService,
     private storage: Storage,
-    private router: Router
-  ) {
+    private router: Router) {
+
     this.initializeApp();
+
+    let href = window.location.pathname
+    if(href === "/login") {
+      this.restService.isLoginPage = true;
+    } else {
+      this.restService.isLoginPage = false;
+    }
     this.storage.get('token').then((token) => {
       if(token === "") {
         this.router.navigateByUrl('/login');
