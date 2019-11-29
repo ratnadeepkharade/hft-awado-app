@@ -5,38 +5,68 @@
 </ion-header>
 
 <ion-content>
-  <ion-grid>
-    <ion-row justify-content-center>
-      <ion-col align-self-center size-md="6" size-lg="5" size-xs="12">
-        <div padding>
-          <img src="../../../assets/images/bike2gologo.png">
-        </div>
+        
+          <form [formGroup]="angForm" novalidate>
+              <ion-grid>
+                  <ion-row justify-content-center>
+                    <ion-col align-self-center size-md="6" size-lg="5" size-xs="12">
+              <div padding>
+                  <img src="../../../assets/images/bike2gologo.png">
+                </div>
+                <div class="ion-text">
+                    <h3>Registration</h3>
+                   
+                  </div>
+                  
+            <ion-item ><ion-input type="text" formControlName="firstName" placeholder="Enter First Name"></ion-input></ion-item>
+              <div
+                *ngIf="angForm.controls['firstName'].invalid && (angForm.controls['firstName'].dirty || angForm.controls['firstName'].touched)"
+                class="alert-danger">
+                <div *ngIf="angForm.controls['firstName'].errors.required">
+                  First Name is required.
+                </div>
+              </div>
+              <ion-item >
+                  <ion-input type="text" formControlName="lastName" placeholder="Enter Last Name"></ion-input>
+              </ion-item>
+              
+              <div
+                *ngIf="angForm.controls['lastName'].invalid && (angForm.controls['lastName'].dirty || angForm.controls['lastName'].touched)"
+                class="alert-danger">
+                <div *ngIf="angForm.controls['lastName'].errors.required">
+                  Last Name is required.
+                </div>
+              </div>
+              <ion-item ><ion-input type="text" formControlName="email" placeholder="Enter Email"></ion-input></ion-item>
+              
+              <div
+                *ngIf="angForm.controls['email'].invalid && (angForm.controls['email'].dirty || angForm.controls['email'].touched)"
+                class="alert-danger">
+                <div *ngIf="angForm.controls['email'].errors.required">
+                  Email is required.
+                </div>
+              </div>
 
-        <div padding>
-          <ion-item>
-            <ion-input type="text" [(ngModel)]="firstName" placeholder="Enter First Name"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-input type="text" [(ngModel)]="lastName" placeholder="Enter Last Name"></ion-input>
-          </ion-item>
-          <ion-item>
-            <ion-input type="text" [(ngModel)]="email" placeholder="Email"></ion-input>
-          </ion-item>
+              <ion-item ><ion-input type="password" formControlName="password" placeholder="Password"></ion-input></ion-item>
+              
+              <div
+                *ngIf="angForm.controls['password'].invalid && (angForm.controls['password'].dirty || angForm.controls['password'].touched)"
+                class="alert-danger">
+                <div *ngIf="angForm.controls['password'].errors.required">
+                  Password is required.
+                </div>
+              </div>
+              
+          
+          <div id="correctCredentialsmsg" padding *ngIf="correctCredentials">
+            Wrong Credentials !
+          </div>
 
-
-          <ion-item>
-            <ion-input type="password" [(ngModel)]="password" placeholder="Password"></ion-input>
-          </ion-item>
-        </div>
-
-        <div id="correctCredentialsmsg" padding *ngIf="correctCredentials">
-          Wrong Credentials !
-        </div>
-
-        <div padding>
-          <ion-button size="large" expand="block" (click)="submitRegister()">Register</ion-button>
-        </div>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+          <div padding>
+            <ion-button [disabled]="angForm.pristine || angForm.invalid" size="large" expand="block" (click)="submitRegister()">Register</ion-button>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
 </ion-content>
