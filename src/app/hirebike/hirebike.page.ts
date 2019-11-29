@@ -102,6 +102,7 @@ export class HirebikePage implements OnInit {
       bikeApi.subscribe((resp) => {
         console.log('my data: ', resp);
         this.toastService.showToast("Trip Started");
+        this.isBikeHired=true;
       }, (error) => {
         console.log(error)
         this.toastService.showToast("This is ongoing Trip")
@@ -121,7 +122,7 @@ export class HirebikePage implements OnInit {
         this.toastService.showToast("Trip Ended!");
       }, (error) => {
         console.log(error)
-        this.toastService.showToast("Unavle to end trip")
+        this.toastService.showToast("No Ongong Trip to End")
       });
     });
 
