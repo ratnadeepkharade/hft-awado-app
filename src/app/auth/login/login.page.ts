@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 import { RestService } from '../../rest.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -12,14 +13,14 @@ import { RestService } from '../../rest.service';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
-  username = "Bob@mail.com";
-  password = "BobPassword";
+  username = "";
+  password = "";
   //username = "";
   //password = "";
   correctCredentials = false;
   loginApi: Observable<any>;
 
-  constructor(private router: Router, public httpClient: HttpClient, public restService: RestService) {
+  constructor(private router: Router, public httpClient: HttpClient, public restService: RestService,public userService: UserService) {
 
   }
 
@@ -41,6 +42,7 @@ export class LoginPage implements OnInit {
         //console.log('my data: ', data);
         this.restService.setToken(data.token);
         this.restService.isLoginPage = false;
+        this.userService.setUsername(this.username);
         this.router.navigateByUrl('/home');
       }, (error) => {
         console.log(JSON.stringify(error));
