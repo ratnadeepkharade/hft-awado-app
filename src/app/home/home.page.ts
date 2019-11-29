@@ -18,32 +18,18 @@ declare var H: any;
 export class HomePage {
   private platform: any;
   private map: any;
+  private defaultLayers: any;
+
   bikes = [];
-  streets = [];
   bikeApi: Observable<any>;
 
-
   private currentLocation = { lat: 0, lng: 0 };
-
-  public is3DChecked = false;
   public isDetailsVisible = false;
-  public selectedBike ={id: 0};
-  public isBikeReserved= false;
+  public selectedBike = { id: 0 };
+  public isBikeReserved = false;
 
-  public tempArr = [1, 2];
-  public locationArr = [{ lat: 48.778409, lng: 9.179252 },
-  { lat: 48.780926, lng: 9.173456 },
-  { lat: 48.775174, lng: 9.175459 },
-  { lat: 48.793704, lng: 9.191112 }]
-  public arrayLanLon = { lat: 0, lng: 0 };
-  @ViewChild("mapElement2d", { static: false })
-  public mapElement2d: ElementRef;
-
-  @ViewChild("mapElement3d", { static: false })
-  public mapElement3d: ElementRef;
-
-
- 
+  @ViewChild("mapElement", { static: false })
+  public mapElement: ElementRef;
 
   constructor(private geolocation: Geolocation,
     public restService: RestService,
@@ -62,7 +48,7 @@ export class HomePage {
 
   ngAfterViewInit() {
     setTimeout(() => {
-      this.loadmap("2D");
+      this.loadmap();
     }, 700);
 
     window.addEventListener('resize', () => this.map.getViewPort().resize());
@@ -73,45 +59,38 @@ export class HomePage {
       maximumAge: 1000, timeout: 4000,
       enableHighAccuracy: true
     }).then((resp) => {
+      let lat = resp.coords.latitude;
+      let lng = resp.coords.longitude;
+
       this.currentLocation.lat = resp.coords.latitude;
       this.currentLocation.lng = resp.coords.longitude;
 
       this.storage.get('token').then((token) => {
-        let url = 'http://193.196.52.237:8081/bikes' + '?lat=' + this.currentLocation.lat + '&lng=' + this.currentLocation.lng;
+        let url = 'http://193.196.52.237:8081/bikes' + '?lat=' + lat + '&lng=' + lng;
         const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
         this.bikeApi = this.httpClient.get(url, { headers });
         this.bikeApi.subscribe((resp) => {
-          console.log('my data: ', resp);
+          console.log("bikes response", resp);
           this.bikes = resp;
           for (let i = 0; i < this.bikes.length; i++) {
-            var beforeDotStr = ''+this.bikes[i].distance;
-            var beforeDot = beforeDotStr.split('.')[0];
-            var afterDotArr = beforeDotStr.split('.')[1].split('');
-            var afterDot = afterDotArr[0] + afterDotArr[1];
-            this.bikes[i].distance = beforeDot + '.' + afterDot; 
+            this.bikes[i].distance = this.bikes[i].distance.toFixed(2);;
             this.reverseGeocode(this.platform, this.bikes[i].lat, this.bikes[i].lon, i);
           }
         }, (error) => console.log(error));
       });
     }, er => {
-      alert('Can not retrieve Location')
+      alert('Can not retrieve location');
     }).catch((error) => {
-      alert('Error getting location - ' + JSON.stringify(error))
+      alert('Error getting location - ' + JSON.stringify(error));
     });
   }
 
-  loadmap(style) {
+  loadmap() {
     // Obtain the default map types from the platform object
-    var mapStyle = "raster";
-    var mapElement = "mapElement2d";
-    if (style === "3D") {
-      mapStyle = "vector";
-      mapElement = "mapElement3d";
-    }
-    var defaultLayers = this.platform.createDefaultLayers();
+    this.defaultLayers = this.platform.createDefaultLayers();
     this.map = new H.Map(
-      this[mapElement].nativeElement,
-      defaultLayers[mapStyle].normal.map,
+      this.mapElement.nativeElement,
+      this.defaultLayers.raster.normal.map,
       {
         zoom: 17,
         pixelRatio: window.devicePixelRatio || 1
@@ -119,39 +98,45 @@ export class HomePage {
     );
 
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-    var ui = H.ui.UI.createDefault(this.map, defaultLayers);
+    var ui = H.ui.UI.createDefault(this.map, this.defaultLayers);
     ui.removeControl("mapsettings");
-    // create custom one
-    var ms = new H.ui.MapSettingsControl({
-      baseLayers: [{
-        label: "3D", layer: defaultLayers.vector.normal.map
-      }, {
-        label: "Normal", layer: defaultLayers.raster.normal.map
-      }, {
-        label: "Satellite", layer: defaultLayers.raster.satellite.map
-      }, {
-        label: "Terrain", layer: defaultLayers.raster.terrain.map
-      }
+    // create custom map settings (icons on map)
+    var customMapSettings = new H.ui.MapSettingsControl({
+      baseLayers: [
+        {
+          label: "3D", layer: this.defaultLayers.vector.normal.map
+        }, {
+          label: "Normal", layer: this.defaultLayers.raster.normal.map
+        }, {
+          label: "Satellite", layer: this.defaultLayers.raster.satellite.map
+        }, {
+          label: "Terrain", layer: this.defaultLayers.raster.terrain.map
+        }
       ],
-      layers: [{
-        label: "layer.traffic", layer: defaultLayers.vector.normal.traffic
-      },
-      {
-        label: "layer.incidents", layer: defaultLayers.vector.normal.trafficincidents
-      }
+      layers: [
+        {
+          label: "layer.traffic", layer: this.defaultLayers.vector.normal.traffic
+        },
+        {
+          label: "layer.incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+        }
       ]
     });
-    ui.addControl("customized", ms);
-    var mapSettings = ui.getControl('customized');
+    ui.addControl("custom-mapsettings", customMapSettings);
+    var mapSettings = ui.getControl('custom-mapsettings');
     var zoom = ui.getControl('zoom');
-
     mapSettings.setAlignment('top-right');
     zoom.setAlignment('right-top');
-    if (style === "3D") {
-      this.map.getViewModel().setLookAtData({ tilt: 60 });
-    }
-    this.getLocation(this.map);
 
+    this.map.addEventListener('baselayerchange', (data) => {
+      let mapConfig = this.map.getBaseLayer().getProvider().getStyleInternal().getConfig();
+      if (mapConfig === null || (mapConfig && mapConfig.sources && mapConfig.sources.omv)) {
+        this.map.getViewModel().setLookAtData({ tilt: 60 });
+      } else {
+        this.map.getViewModel().setLookAtData({ tilt: 0 });
+      }
+    });
+    this.getLocation(this.map);
 
     var img = ['../../../assets/images/100_percent.png', '../../../assets/images/75_percent.png', '../../../assets/images/50_percent.png', '../../../assets/images/25_percent.png', '../../../assets/images/0_percent.png'];
     for (let i = 0; i < this.bikes.length; i++) {
@@ -166,24 +151,23 @@ export class HomePage {
       } else if (this.bikes[i].batteryPercentage < 25 && this.bikes[i].batteryPercentage >= 0) {
         this.addMarker(Number(this.bikes[i].lat), Number(this.bikes[i].lon), img[3]);
       }
-    
+
     }
   }
+
   getCurrentPosition() {
     this.getLocation(this.map.setZoom(17));
-    
   }
-  
+
   getLocation(map) {
     this.geolocation.getCurrentPosition(
       {
         maximumAge: 1000, timeout: 2000,
         enableHighAccuracy: true
-        
       }
     ).then((resp) => {
-      let lat = resp.coords.latitude
-      let lng = resp.coords.longitude
+      let lat = resp.coords.latitude;
+      let lng = resp.coords.longitude;
       this.currentLocation.lat = resp.coords.latitude;
       this.currentLocation.lng = resp.coords.longitude;
       this.moveMapToGiven(map, lat, lng);
@@ -195,43 +179,25 @@ export class HomePage {
   }
 
   moveMapToGiven(map, lat, lng) {
-
     var icon = new H.map.Icon('../../../assets/images/current_location.png');
     // Create a marker using the previously instantiated icon:
     var marker = new H.map.Marker({ lat: lat, lng: lng }, { icon: icon });
-
     // Add the marker to the map:
     map.addObject(marker);
     map.setCenter({ lat: lat, lng: lng });
   }
 
-
-
   addMarker(lat, lng, img) {
     var icon = new H.map.Icon(img);
     // Create a marker using the previously instantiated icon:
     var marker = new H.map.Marker({ lat: lat, lng: lng }, { icon: icon });
-
     // Add the marker to the map:
     this.map.addObject(marker);
   }
 
-  toggle3DMaps() {
-    console.log(this.is3DChecked);
-    if (!this.is3DChecked) {
-      setTimeout(() => {
-        this.loadmap("3D");
-      }, 1000);
-    }
-  }
-
   enable3DMaps() {
-    this.is3DChecked = true;
-    setTimeout(() => {
-      this.loadmap("3D");
-    }, 100);
+    this.map.setBaseLayer(this.defaultLayers.vector.normal.map);
   }
-
 
   reverseGeocode(platform, lat, lng, index) {
     var prox = lat + ',' + lng + ',56';
@@ -248,7 +214,7 @@ export class HomePage {
       var streets = result.Response.View[0].Result[0].Location.Address.Street;
       var houseNumber = result.Response.View[0].Result[0].Location.Address.HouseNumber;
       var zipcode = result.Response.View[0].Result[0].Location.Address.PostalCode;
-     
+
       this.bikes[index].address = streets;
       this.bikes[index].HouseNumber = houseNumber;
       this.bikes[index].PostalCode = zipcode;
@@ -258,13 +224,11 @@ export class HomePage {
     });
   }
 
-
   showBikeDetails(bike) {
-
-    this.selectedBike=bike;
-    this.selectedBike.id=bike.id;
+    this.selectedBike = bike;
     this.isDetailsVisible = true;
   }
+
   reserveBike() {
     //this.selectedBike=bikeS;
     this.storage.get('token').then((token) => {
@@ -273,17 +237,13 @@ export class HomePage {
       this.bikeApi = this.httpClient.get(url, { headers });
       this.bikeApi.subscribe((resp) => {
         console.log('my data: ', resp);
-        this.isBikeReserved=true;
+        this.isBikeReserved = true;
         this.toastService.showToast("Reservation Successful!");
       }, (error) => {
         console.log(error)
         this.toastService.showToast("Only one bike may be reserved or rented at a time")
       });
     });
- 
-
   }
- 
-  
 
 }
