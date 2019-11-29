@@ -91,10 +91,6 @@ export class HomePage {
     });
   }
 
-
-
-
-
   loadmap(style) {
     // Obtain the default map types from the platform object
     var mapStyle = "raster";
@@ -263,7 +259,6 @@ export class HomePage {
         this.isBikeReserved=false;
       }, (error) => console.log(error));
     });
-
   }
   
 }

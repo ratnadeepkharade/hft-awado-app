@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title slot="start">
+      My Reservation
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card *ngIf="noReservation">
+    <ion-card-content>
+      No reservation found
+    </ion-card-content>
+  </ion-card>
+  <div #mapElement style="width: 100%; height: 100%" id="mapContainer" *ngIf="!noReservation"></div>
+</ion-content>
+
+<ion-footer>
+  <div class="bike-details-container" *ngIf="!noReservation">
+    <div class="inner">
+      <div class="button-container">
+        <ion-grid>
+          <ion-row>
+            <ion-col>Bike Name</ion-col>
+            <ion-col>{{bikeDetails.name}}</ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>Battery Level</ion-col>
+            <ion-col>
+              <ion-icon class="battery-icon" name="battery-charging"></ion-icon>
+              {{bikeDetails.batteryPercentage +" %"}}
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>Bike Location</ion-col>
+            <ion-col>{{bikeDetails.address}}</ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>Bike Distance</ion-col>
+            <ion-col>{{ bikeDetails.distance +" m"}}</ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <ion-button size="medium" expand="block" (click)="hireBike()">Hire</ion-button>
+            </ion-col>
+            <ion-col>
+              <ion-button size="medium" expand="block" (click)="cancelReservation()">Cancel Reservation</ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </div>
+  </div>
+</ion-footer>
