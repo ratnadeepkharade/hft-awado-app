@@ -7,6 +7,7 @@ import { Storage } from '@ionic/storage';
 import { Router } from '@angular/router';
 
 import { RestService } from './rest.service';
+import { UserService } from './services/user.service';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +15,7 @@ import { RestService } from './rest.service';
   styleUrls: ['app.component.scss']
 })
 export class AppComponent {
-
+  username="";
   isLoginPage = false;
 
   public appPages = [
@@ -39,6 +40,7 @@ export class AppComponent {
       icon: 'exit'
     }
   ];
+  
 
   constructor(
     private platform: Platform,
@@ -46,7 +48,9 @@ export class AppComponent {
     private statusBar: StatusBar,
     public restService: RestService,
     private storage: Storage,
-    private router: Router) {
+    private router: Router,
+    public userService: UserService) {
+    this.username = this.userService.getUsername();
 
     this.initializeApp();
 
