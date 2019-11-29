@@ -23,6 +23,7 @@ export class MyreservationPage implements OnInit {
 
   reservedBike: any = {};
   bikeDetails: any = {};
+  isBikeHired=false;
 
   noReservation = true;
 
@@ -74,6 +75,7 @@ export class MyreservationPage implements OnInit {
         console.log('Reserved Bike', resp);
         if (resp.data) {
           this.reservedBike = resp.data;
+          this.isBikeHired = this.reservedBike.rented;
           //Call Bike Details api
           let bikeDetailsUrl = 'http://193.196.52.237:8081/bikes/' + this.reservedBike.bikeId;
           let bikeDetailsApi = this.httpClient.get(bikeDetailsUrl, { headers });
@@ -261,6 +263,9 @@ export class MyreservationPage implements OnInit {
     }
   };
   hireBike() {
+    if (this.isBikeHired)
+    this.toastService.showToast("You already Hired this bike");
+    else
     this.router.navigateByUrl('/hirebike');
   }
 }

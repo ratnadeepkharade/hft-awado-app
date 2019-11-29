@@ -29,6 +29,11 @@ export class AppComponent {
       icon: 'clipboard'
     },
     {
+      title: 'My Rides',
+      url: '/hirebike',
+      icon: 'clipboard'
+    },
+    {
       title: 'Logout',
       url: '/login',
       icon: 'exit'
