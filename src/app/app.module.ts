@@ -16,6 +16,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { RestService } from './rest.service';
 import { ToastService } from './services/toast.service';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [AppComponent],
@@ -25,6 +26,8 @@ import { ToastService } from './services/toast.service';
     HttpClientModule,
     IonicModule.forRoot(),
     AppRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
     IonicStorageModule.forRoot()
   ],
   providers: [
