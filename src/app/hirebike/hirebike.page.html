@@ -18,7 +18,7 @@
   <div #mapElement style="width: 100%; height: 100%" id="mapContainer"></div>
 </ion-content>
 <ion-footer>
-  <div class="bike-details-container">
+  <div class="bike-details-container" *ngIf="!isBikeHired">
     <div class="inner">
       <div class="button-container">
         <ion-grid>
@@ -33,6 +33,24 @@
           <ion-row>
             <ion-col>
               <ion-button size="medium" expand="block" (click)="startTrip()">Start Trip</ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </div>
+  </div>
+  <div class="problem-container" *ngIf="isBikeHired">
+    <div class="inner">
+      <div class="button-container">
+        <ion-grid>
+          <ion-row>
+            <ion-col>Any Problems?</ion-col>
+           
+          </ion-row>
+          
+          <ion-row>
+            <ion-col>
+              <ion-button size="medium" expand="block" (click)="CancelTrip()">Cancel Trip</ion-button>
             </ion-col>
           </ion-row>
         </ion-grid>

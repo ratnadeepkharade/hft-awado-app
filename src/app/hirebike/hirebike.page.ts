@@ -22,6 +22,7 @@ export class HirebikePage implements OnInit {
 
   reservedBike: any = {};
   bikeDetails: any = {};
+  isBikeHired=false;
 
   noReservation = true;
 
@@ -91,19 +92,25 @@ export class HirebikePage implements OnInit {
       }, (bikeDetailsError) => console.log(bikeDetailsError));
     });
   }
+  startTrip(){
 
-  cancelReservation() {
     this.storage.get('token').then((token) => {
-      let url = 'http://193.196.52.237:8081/reservation' + '?bikeId=' + this.bikeDetails.id;
+      let url = 'http://193.196.52.237:8081/rent' + '?bikeId=' + this.bikeDetails.id;
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
-      let bikeApi = this.httpClient.delete(url, { headers });
+      let bikeApi = this.httpClient.get(url, { headers });
       bikeApi.subscribe((resp) => {
-        console.log('Reservation Cancelled: ', resp);
-        this.toastService.showToast("Bike Reservation successfully cancelled.");
-        this.router.navigateByUrl('/home');
-      }, (error) => console.log(error));
+        console.log('my data: ', resp);
+        this.toastService.showToast("Trip Started");
+        this.isBikeHired=true;
+      }, (error) => {
+        console.log(error)
+        this.toastService.showToast("Unable to Hire Bike")
+      });
     });
+
   }
+
+  
 
   loadmap() {
     var defaultLayers = this.platform.createDefaultLayers();
@@ -259,8 +266,6 @@ export class HirebikePage implements OnInit {
       //this.map.setZoom(this.map.getZoom() - 4.3, true);
     }
   };
-  hireBike() {
-    this.router.navigateByUrl('/hirebike');
-  }
+  
 
 }
