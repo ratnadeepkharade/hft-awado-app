@@ -102,6 +102,7 @@ export class HirebikePage implements OnInit {
       bikeApi.subscribe((resp) => {
         console.log('my data: ', resp);
         this.toastService.showToast("Trip Started");
+        this.isBikeHired=true;
       }, (error) => {
         console.log(error)
         this.toastService.showToast("This is ongoing Trip")
@@ -110,7 +111,23 @@ export class HirebikePage implements OnInit {
 
   }
 
-  
+  CancelTrip(){
+
+    this.storage.get('token').then((token) => {
+      let url = 'http://193.196.52.237:8081/rent' + '?bikeId=' + this.bikeDetails.id;
+      const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
+      let bikeApi = this.httpClient.delete(url, { headers });
+      bikeApi.subscribe((resp) => {
+        console.log('my data: ', resp);
+        this.toastService.showToast("Trip Ended!");
+      }, (error) => {
+        console.log(error)
+        this.toastService.showToast("No Ongong Trip to End")
+      });
+    });
+
+  }
+
 
   loadmap() {
     var defaultLayers = this.platform.createDefaultLayers();
