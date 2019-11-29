@@ -6,11 +6,14 @@ import { Storage } from '@ionic/storage';
 })
 export class RestService {
 
+  public isUserLoggedIn = false;
+  public isLoginPage = false;
+
   constructor(private storage: Storage) { }
 
   setToken(token) {
-    // set a key/value
     this.storage.set('token', token);
+    this.isUserLoggedIn = true;
   }
 
   getToken() {

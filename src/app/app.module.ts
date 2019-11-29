@@ -15,6 +15,7 @@ import { NativeGeocoder, NativeGeocoderOptions } from '@ionic-native/native-geoc
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { RestService } from './rest.service';
+import { ToastService } from './services/toast.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -32,6 +33,7 @@ import { RestService } from './rest.service';
     SplashScreen,
     RestService,
     NativeGeocoder,
+    ToastService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

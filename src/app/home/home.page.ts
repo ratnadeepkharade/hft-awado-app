@@ -4,6 +4,7 @@ import { RestService } from '../rest.service';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
+import { ToastService } from '../services/toast.service';
 
 
 declare var H: any;
@@ -25,6 +26,9 @@ export class HomePage {
   private currentLocation = { lat: 0, lng: 0 };
 
   public is3DChecked = false;
+  public isDetailsVisible = false;
+  public selectedBike ={id: 0};
+  public isBikeReserved= false;
 
   public tempArr = [1, 2];
   public locationArr = [{ lat: 48.778409, lng: 9.179252 },
@@ -44,7 +48,8 @@ export class HomePage {
   constructor(private geolocation: Geolocation,
     public restService: RestService,
     public httpClient: HttpClient,
-    private storage: Storage) {
+    private storage: Storage,
+    private toastService: ToastService) {
 
     this.platform = new H.service.Platform({
       'apikey': 'tiVTgBnPbgV1spie5U2MSy-obhD9r2sGiOCbBzFY2_k'
@@ -58,14 +63,14 @@ export class HomePage {
   ngAfterViewInit() {
     setTimeout(() => {
       this.loadmap("2D");
-    }, 200);
+    }, 700);
 
     window.addEventListener('resize', () => this.map.getViewPort().resize());
   }
 
   getBikesList() {
     this.geolocation.getCurrentPosition({
-      maximumAge: 1000, timeout: 1000,
+      maximumAge: 1000, timeout: 4000,
       enableHighAccuracy: true
     }).then((resp) => {
       this.currentLocation.lat = resp.coords.latitude;
@@ -94,10 +99,6 @@ export class HomePage {
       alert('Error getting location - ' + JSON.stringify(error))
     });
   }
-
-
-
-
 
   loadmap(style) {
     // Obtain the default map types from the platform object
@@ -231,6 +232,7 @@ export class HomePage {
     }, 100);
   }
 
+
   reverseGeocode(platform, lat, lng, index) {
     var prox = lat + ',' + lng + ',56';
     var geocoder = platform.getGeocodingService(),
@@ -257,11 +259,31 @@ export class HomePage {
   }
 
 
+  showBikeDetails(bike) {
 
+    this.selectedBike=bike;
+    this.selectedBike.id=bike.id;
+    this.isDetailsVisible = true;
+  }
+  reserveBike() {
+    //this.selectedBike=bikeS;
+    this.storage.get('token').then((token) => {
+      let url = 'http://193.196.52.237:8081/reservation' + '?bikeId=' + this.selectedBike.id;
+      const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
+      this.bikeApi = this.httpClient.get(url, { headers });
+      this.bikeApi.subscribe((resp) => {
+        console.log('my data: ', resp);
+        this.isBikeReserved=true;
+        this.toastService.showToast("Reservation Successful!");
+      }, (error) => {
+        console.log(error)
+        this.toastService.showToast("Only one bike may be reserved or rented at a time")
+      });
+    });
+ 
 
-
-
-
-
+  }
+ 
+  
 
 }

@@ -38,17 +38,16 @@ export class LoginPage implements OnInit {
     });
     this.loginApi
       .subscribe((data) => {
-        console.log('my data: ', data);
+        //console.log('my data: ', data);
         this.restService.setToken(data.token);
+        this.restService.isLoginPage = false;
         this.router.navigateByUrl('/home');
       }, (error) => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         this.correctCredentials = true;
       });
   }
   register() {
     this.router.navigateByUrl('/register');
-
-
   }
 }

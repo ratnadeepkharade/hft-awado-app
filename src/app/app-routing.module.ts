@@ -18,10 +18,20 @@ const routes: Routes = [
   {
     path: 'login',
     loadChildren: () => import('./auth/login/login.module').then( m => m.LoginPageModule)
-  },  {
+  },
+  {
     path: 'register',
     loadChildren: () => import('./auth/register/register.module').then( m => m.RegisterPageModule)
+  },  {
+    path: 'myreservation',
+    loadChildren: () => import('./myreservation/myreservation.module').then( m => m.MyreservationPageModule)
+  },
+  {
+    path: 'hirebike',
+    loadChildren: () => import('./hirebike/hirebike.module').then( m => m.HirebikePageModule)
   }
+
+  
 
 ];
 
