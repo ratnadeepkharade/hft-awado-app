@@ -12,8 +12,10 @@ import { RestService } from '../../rest.service';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit {
-  username = "";
-  password = "";
+  username = "Bob@mail.com";
+  password = "BobPassword";
+  //username = "";
+  //password = "";
   correctCredentials = false;
   loginApi: Observable<any>;
 
@@ -36,12 +38,12 @@ export class LoginPage implements OnInit {
     });
     this.loginApi
       .subscribe((data) => {
-        console.log('my data: ', data);
+        //console.log('my data: ', data);
         this.restService.setToken(data.token);
         this.restService.isLoginPage = false;
         this.router.navigateByUrl('/home');
       }, (error) => {
-        console.log(error);
+        console.log(JSON.stringify(error));
         this.correctCredentials = true;
       });
   }

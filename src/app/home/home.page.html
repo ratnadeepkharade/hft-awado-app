@@ -14,10 +14,13 @@
 </ion-header>
 
 <ion-content>
+
+
   <div #mapElement2d style="width: 100%; height: 100%" id="mapContainer" *ngIf="!is3DChecked"></div>
   <div #mapElement3d style="width: 100%; height: 100%" id="mapContainer" *ngIf="is3DChecked"></div>
   <!--div #mapElement style="width: 100%; height: 100%" id="mapContainer"></div-->
-  <ion-fab vertical="bottom" horizontal="end" (click)="getCurrentPosition()" slot="fixed">
+  <ion-fab class="get-position" vertical="bottom" horizontal="end" (click)="getCurrentPosition()" slot="fixed">
+
     <ion-fab-button>
       <ion-icon name="locate"></ion-icon>
     </ion-fab-button>
@@ -27,6 +30,7 @@
 <ion-footer>
 
   <div class="bike-list-container" *ngIf="!isDetailsVisible">
+
     <div class="bike-container" *ngFor="let bike of bikes">
       <div class="inner" (click)="showBikeDetails(bike)">
         <div class="bike-name">
@@ -39,8 +43,9 @@
           <div>{{bike.batteryPercentage + " %"}}</div>
         </div>
         <div class="address-info">
-          <div class="disance">{{bike.distance + "m"}}</div>
-          <div class="address">{{bike.address}}</div>
+          <div class="disance">{{bike.distance + " km"}}</div>
+          <div class="address">{{bike.address+" "+bike.HouseNumber+ ", " +bike.PostalCode}}</div>
+
         </div>
       </div>
     </div>
@@ -92,7 +97,7 @@
               Bike Distance
             </ion-col>
             <ion-col>
-              {{selectedBike.distance + "m"}}
+              {{selectedBike.distance + " km"}}
             </ion-col>
           </ion-row>
           <ion-row>
@@ -105,6 +110,7 @@
           </ion-row>
          
         </ion-grid>
+
       </div>
     </div>
 

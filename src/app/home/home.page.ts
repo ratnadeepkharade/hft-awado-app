@@ -19,7 +19,9 @@ export class HomePage {
   private platform: any;
   private map: any;
   bikes = [];
+  streets = [];
   bikeApi: Observable<any>;
+
 
   private currentLocation = { lat: 0, lng: 0 };
 
@@ -41,8 +43,7 @@ export class HomePage {
   public mapElement3d: ElementRef;
 
 
-  //@ViewChild("mapElement", { static: false })
-  //public mapElement: ElementRef;
+ 
 
   constructor(private geolocation: Geolocation,
     public restService: RestService,
@@ -62,14 +63,14 @@ export class HomePage {
   ngAfterViewInit() {
     setTimeout(() => {
       this.loadmap("2D");
-    }, 1000);
+    }, 700);
 
     window.addEventListener('resize', () => this.map.getViewPort().resize());
   }
 
   getBikesList() {
     this.geolocation.getCurrentPosition({
-      maximumAge: 1000, timeout: 5000,
+      maximumAge: 1000, timeout: 4000,
       enableHighAccuracy: true
     }).then((resp) => {
       this.currentLocation.lat = resp.coords.latitude;
@@ -82,6 +83,14 @@ export class HomePage {
         this.bikeApi.subscribe((resp) => {
           console.log('my data: ', resp);
           this.bikes = resp;
+          for (let i = 0; i < this.bikes.length; i++) {
+            var beforeDotStr = ''+this.bikes[i].distance;
+            var beforeDot = beforeDotStr.split('.')[0];
+            var afterDotArr = beforeDotStr.split('.')[1].split('');
+            var afterDot = afterDotArr[0] + afterDotArr[1];
+            this.bikes[i].distance = beforeDot + '.' + afterDot; 
+            this.reverseGeocode(this.platform, this.bikes[i].lat, this.bikes[i].lon, i);
+          }
         }, (error) => console.log(error));
       });
     }, er => {
@@ -137,38 +146,40 @@ export class HomePage {
     var zoom = ui.getControl('zoom');
 
     mapSettings.setAlignment('top-right');
-    zoom.setAlignment('left-top');
+    zoom.setAlignment('right-top');
     if (style === "3D") {
       this.map.getViewModel().setLookAtData({ tilt: 60 });
     }
     this.getLocation(this.map);
-    var img = ['../../../assets/images/100_percent.png', '../../../assets/images/75_percent.png', '../../../assets/images/50_percent.png','../../../assets/images/25_percent.png','../../../assets/images/0_percent.png'];
+
+
+    var img = ['../../../assets/images/100_percent.png', '../../../assets/images/75_percent.png', '../../../assets/images/50_percent.png', '../../../assets/images/25_percent.png', '../../../assets/images/0_percent.png'];
     for (let i = 0; i < this.bikes.length; i++) {
-      if(this.bikes[i].batteryPercentage<100 &&this.bikes[i].batteryPercentage>=75){
+      if (this.bikes[i].batteryPercentage < 100 && this.bikes[i].batteryPercentage >= 75) {
         this.addMarker(Number(this.bikes[i].lat), Number(this.bikes[i].lon), img[0]);
       }
-      else if(this.bikes[i].batteryPercentage<75 &&this.bikes[i].batteryPercentage>=50){
+      else if (this.bikes[i].batteryPercentage < 75 && this.bikes[i].batteryPercentage >= 50) {
         this.addMarker(Number(this.bikes[i].lat), Number(this.bikes[i].lon), img[1]);
       }
-      else if(this.bikes[i].batteryPercentage<50 &&this.bikes[i].batteryPercentage>=25){
+      else if (this.bikes[i].batteryPercentage < 50 && this.bikes[i].batteryPercentage >= 25) {
         this.addMarker(Number(this.bikes[i].lat), Number(this.bikes[i].lon), img[2]);
-      }else if(this.bikes[i].batteryPercentage<25 &&this.bikes[i].batteryPercentage>=0){
+      } else if (this.bikes[i].batteryPercentage < 25 && this.bikes[i].batteryPercentage >= 0) {
         this.addMarker(Number(this.bikes[i].lat), Number(this.bikes[i].lon), img[3]);
       }
-      //console.log("rroni", this.bikes[i].lat);
-     // this.addMarker(Number(this.bikes[i].lat), Number(this.bikes[i].lon), img[0]);
-      // this.addMarker(Number(48.78077362), 9.17782398, img[i % 3]);
-      //alert(this.bikes[i].lat);
+    
     }
   }
   getCurrentPosition() {
-    this.getLocation(this.map);
+    this.getLocation(this.map.setZoom(17));
+    
   }
+  
   getLocation(map) {
     this.geolocation.getCurrentPosition(
       {
-        maximumAge: 1000, timeout: 5000,
+        maximumAge: 1000, timeout: 2000,
         enableHighAccuracy: true
+        
       }
     ).then((resp) => {
       let lat = resp.coords.latitude
@@ -194,11 +205,7 @@ export class HomePage {
     map.setCenter({ lat: lat, lng: lng });
   }
 
-  expandBikeList() {
-    for (let i = 0; i < 20; i++) {
-      this.tempArr.push(i + 3);
-    }
-  }
+
 
   addMarker(lat, lng, img) {
     var icon = new H.map.Icon(img);
@@ -224,6 +231,33 @@ export class HomePage {
       this.loadmap("3D");
     }, 100);
   }
+
+
+  reverseGeocode(platform, lat, lng, index) {
+    var prox = lat + ',' + lng + ',56';
+    var geocoder = platform.getGeocodingService(),
+      parameters = {
+        prox: prox,
+        mode: 'retrieveAddresses',
+        maxresults: '1',
+        gen: '9'
+      };
+
+    geocoder.reverseGeocode(parameters, result => {
+      console.log(result);
+      var streets = result.Response.View[0].Result[0].Location.Address.Street;
+      var houseNumber = result.Response.View[0].Result[0].Location.Address.HouseNumber;
+      var zipcode = result.Response.View[0].Result[0].Location.Address.PostalCode;
+     
+      this.bikes[index].address = streets;
+      this.bikes[index].HouseNumber = houseNumber;
+      this.bikes[index].PostalCode = zipcode;
+
+    }, (error) => {
+      alert(error);
+    });
+  }
+
 
   showBikeDetails(bike) {
 
@@ -251,4 +285,5 @@ export class HomePage {
   }
  
   
+
 }

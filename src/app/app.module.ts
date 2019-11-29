@@ -10,7 +10,7 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { IonicStorageModule } from '@ionic/storage';
-
+import { NativeGeocoder, NativeGeocoderOptions } from '@ionic-native/native-geocoder/ngx';
 // custom dependencies
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -32,6 +32,7 @@ import { ToastService } from './services/toast.service';
     StatusBar,
     SplashScreen,
     RestService,
+    NativeGeocoder,
     ToastService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
