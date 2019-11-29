@@ -18,6 +18,7 @@ declare var H: any;
 export class HomePage {
   private platform: any;
   private map: any;
+  private defaultLayers:any;
   bikes = [];
   streets = [];
   bikeApi: Observable<any>;
@@ -27,8 +28,8 @@ export class HomePage {
 
   public is3DChecked = false;
   public isDetailsVisible = false;
-  public selectedBike ={id: 0};
-  public isBikeReserved= false;
+  public selectedBike = { id: 0 };
+  public isBikeReserved = false;
 
   public tempArr = [1, 2];
   public locationArr = [{ lat: 48.778409, lng: 9.179252 },
@@ -43,7 +44,7 @@ export class HomePage {
   public mapElement3d: ElementRef;
 
 
- 
+
 
   constructor(private geolocation: Geolocation,
     public restService: RestService,
@@ -84,11 +85,11 @@ export class HomePage {
           console.log('my data: ', resp);
           this.bikes = resp;
           for (let i = 0; i < this.bikes.length; i++) {
-            var beforeDotStr = ''+this.bikes[i].distance;
+            var beforeDotStr = '' + this.bikes[i].distance;
             var beforeDot = beforeDotStr.split('.')[0];
             var afterDotArr = beforeDotStr.split('.')[1].split('');
             var afterDot = afterDotArr[0] + afterDotArr[1];
-            this.bikes[i].distance = beforeDot + '.' + afterDot; 
+            this.bikes[i].distance = beforeDot + '.' + afterDot;
             this.reverseGeocode(this.platform, this.bikes[i].lat, this.bikes[i].lon, i);
           }
         }, (error) => console.log(error));
@@ -108,10 +109,10 @@ export class HomePage {
       mapStyle = "vector";
       mapElement = "mapElement3d";
     }
-    var defaultLayers = this.platform.createDefaultLayers();
+    this.defaultLayers = this.platform.createDefaultLayers();
     this.map = new H.Map(
       this[mapElement].nativeElement,
-      defaultLayers[mapStyle].normal.map,
+      this.defaultLayers[mapStyle].normal.map,
       {
         zoom: 17,
         pixelRatio: window.devicePixelRatio || 1
@@ -119,25 +120,25 @@ export class HomePage {
     );
 
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
-    var ui = H.ui.UI.createDefault(this.map, defaultLayers);
+    var ui = H.ui.UI.createDefault(this.map, this.defaultLayers);
     ui.removeControl("mapsettings");
     // create custom one
     var ms = new H.ui.MapSettingsControl({
       baseLayers: [{
-        label: "3D", layer: defaultLayers.vector.normal.map
+        label: "3D", layer: this.defaultLayers.vector.normal.map
       }, {
-        label: "Normal", layer: defaultLayers.raster.normal.map
+        label: "Normal", layer: this.defaultLayers.raster.normal.map
       }, {
-        label: "Satellite", layer: defaultLayers.raster.satellite.map
+        label: "Satellite", layer: this.defaultLayers.raster.satellite.map
       }, {
-        label: "Terrain", layer: defaultLayers.raster.terrain.map
+        label: "Terrain", layer: this.defaultLayers.raster.terrain.map
       }
       ],
       layers: [{
-        label: "layer.traffic", layer: defaultLayers.vector.normal.traffic
+        label: "layer.traffic", layer: this.defaultLayers.vector.normal.traffic
       },
       {
-        label: "layer.incidents", layer: defaultLayers.vector.normal.trafficincidents
+        label: "layer.incidents", layer: this.defaultLayers.vector.normal.trafficincidents
       }
       ]
     });
@@ -150,6 +151,18 @@ export class HomePage {
     if (style === "3D") {
       this.map.getViewModel().setLookAtData({ tilt: 60 });
     }
+
+    this.map.addEventListener('baselayerchange', (data) => {
+      //let mapState = this.map.getBaseLayer().getProvider().getStyleInternal().getState();
+      let mapConfig = this.map.getBaseLayer().getProvider().getStyleInternal().getConfig();
+      console.log(JSON.stringify(mapConfig));
+      //console.log(this.map.getLayers().asArray());
+      if (mapConfig === null || (mapConfig && mapConfig.sources && mapConfig.sources.omv)) {
+        this.map.getViewModel().setLookAtData({ tilt: 60 });
+      } else {
+        this.map.getViewModel().setLookAtData({ tilt: 0 });
+      }
+    })
     this.getLocation(this.map);
 
 
@@ -166,20 +179,20 @@ export class HomePage {
       } else if (this.bikes[i].batteryPercentage < 25 && this.bikes[i].batteryPercentage >= 0) {
         this.addMarker(Number(this.bikes[i].lat), Number(this.bikes[i].lon), img[3]);
       }
-    
+
     }
   }
   getCurrentPosition() {
     this.getLocation(this.map.setZoom(17));
-    
+
   }
-  
+
   getLocation(map) {
     this.geolocation.getCurrentPosition(
       {
         maximumAge: 1000, timeout: 2000,
         enableHighAccuracy: true
-        
+
       }
     ).then((resp) => {
       let lat = resp.coords.latitude
@@ -226,10 +239,7 @@ export class HomePage {
   }
 
   enable3DMaps() {
-    this.is3DChecked = true;
-    setTimeout(() => {
-      this.loadmap("3D");
-    }, 100);
+    this.map.setBaseLayer(this.defaultLayers.vector.normal.map);
   }
 
 
@@ -248,7 +258,7 @@ export class HomePage {
       var streets = result.Response.View[0].Result[0].Location.Address.Street;
       var houseNumber = result.Response.View[0].Result[0].Location.Address.HouseNumber;
       var zipcode = result.Response.View[0].Result[0].Location.Address.PostalCode;
-     
+
       this.bikes[index].address = streets;
       this.bikes[index].HouseNumber = houseNumber;
       this.bikes[index].PostalCode = zipcode;
@@ -261,8 +271,8 @@ export class HomePage {
 
   showBikeDetails(bike) {
 
-    this.selectedBike=bike;
-    this.selectedBike.id=bike.id;
+    this.selectedBike = bike;
+    this.selectedBike.id = bike.id;
     this.isDetailsVisible = true;
   }
   reserveBike() {
@@ -273,17 +283,12 @@ export class HomePage {
       this.bikeApi = this.httpClient.get(url, { headers });
       this.bikeApi.subscribe((resp) => {
         console.log('my data: ', resp);
-        this.isBikeReserved=true;
+        this.isBikeReserved = true;
         this.toastService.showToast("Reservation Successful!");
       }, (error) => {
         console.log(error)
         this.toastService.showToast("Only one bike may be reserved or rented at a time")
       });
     });
- 
-
   }
- 
-  
-
 }
