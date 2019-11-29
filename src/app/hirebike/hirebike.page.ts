@@ -7,15 +7,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
 import { ToastService } from '../services/toast.service';
 import { Router } from '@angular/router';
-
 declare var H: any;
-
 @Component({
-  selector: 'app-myreservation',
-  templateUrl: './myreservation.page.html',
-  styleUrls: ['./myreservation.page.scss'],
+  selector: 'app-hirebike',
+  templateUrl: './hirebike.page.html',
+  styleUrls: ['./hirebike.page.scss'],
 })
-export class MyreservationPage implements OnInit {
+export class HirebikePage implements OnInit {
+
   private platform: any;
   private map: any;
   // Get an instance of the routing service:
@@ -263,4 +262,5 @@ export class MyreservationPage implements OnInit {
   hireBike() {
     this.router.navigateByUrl('/hirebike');
   }
+
 }

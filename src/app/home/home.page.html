@@ -95,7 +95,7 @@
               {{selectedBike.distance + "m"}}
             </ion-col>
           </ion-row>
-          <ion-row  *ngIf="!isBikeReserved">
+          <ion-row>
             <ion-col>
               <ion-button size="medium" expand="block" (click)="reserveBike()">Reserve</ion-button>
             </ion-col>
@@ -103,14 +103,7 @@
               <ion-button size="medium" expand="block" (click)="navigatetoBike()">Navigate</ion-button>
             </ion-col>
           </ion-row>
-          <ion-row  *ngIf="isBikeReserved">
-              <ion-col>
-                <ion-button size="medium" expand="block" (click)="hireBike()">Hire</ion-button>
-              </ion-col>
-              <ion-col>
-                <ion-button size="medium" expand="block" (click)="cancelReservation()">Cancel Reservation</ion-button>
-              </ion-col>
-            </ion-row>
+         
         </ion-grid>
       </div>
     </div>
