@@ -19,32 +19,17 @@ export class HomePage {
   private platform: any;
   private map: any;
   private defaultLayers:any;
+
   bikes = [];
-  streets = [];
   bikeApi: Observable<any>;
 
-
   private currentLocation = { lat: 0, lng: 0 };
-
-  public is3DChecked = false;
   public isDetailsVisible = false;
   public selectedBike = { id: 0 };
   public isBikeReserved = false;
 
-  public tempArr = [1, 2];
-  public locationArr = [{ lat: 48.778409, lng: 9.179252 },
-  { lat: 48.780926, lng: 9.173456 },
-  { lat: 48.775174, lng: 9.175459 },
-  { lat: 48.793704, lng: 9.191112 }]
-  public arrayLanLon = { lat: 0, lng: 0 };
-  @ViewChild("mapElement2d", { static: false })
-  public mapElement2d: ElementRef;
-
-  @ViewChild("mapElement3d", { static: false })
-  public mapElement3d: ElementRef;
-
-
-
+  @ViewChild("mapElement", { static: false })
+  public mapElement: ElementRef;
 
   constructor(private geolocation: Geolocation,
     public restService: RestService,
@@ -63,7 +48,7 @@ export class HomePage {
 
   ngAfterViewInit() {
     setTimeout(() => {
-      this.loadmap("2D");
+      this.loadmap();
     }, 700);
 
     window.addEventListener('resize', () => this.map.getViewPort().resize());
@@ -74,11 +59,14 @@ export class HomePage {
       maximumAge: 1000, timeout: 4000,
       enableHighAccuracy: true
     }).then((resp) => {
+      let lat = resp.coords.latitude;
+      let lng = resp.coords.longitude;
+
       this.currentLocation.lat = resp.coords.latitude;
       this.currentLocation.lng = resp.coords.longitude;
 
       this.storage.get('token').then((token) => {
-        let url = 'http://193.196.52.237:8081/bikes' + '?lat=' + this.currentLocation.lat + '&lng=' + this.currentLocation.lng;
+        let url = 'http://193.196.52.237:8081/bikes' + '?lat=' + lat + '&lng=' + lng;
         const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
         this.bikeApi = this.httpClient.get(url, { headers });
         this.bikeApi.subscribe((resp) => {
@@ -101,18 +89,12 @@ export class HomePage {
     });
   }
 
-  loadmap(style) {
+  loadmap() {
     // Obtain the default map types from the platform object
-    var mapStyle = "raster";
-    var mapElement = "mapElement2d";
-    if (style === "3D") {
-      mapStyle = "vector";
-      mapElement = "mapElement3d";
-    }
     this.defaultLayers = this.platform.createDefaultLayers();
     this.map = new H.Map(
-      this[mapElement].nativeElement,
-      this.defaultLayers[mapStyle].normal.map,
+      this.mapElement.nativeElement,
+      this.defaultLayers.raster.normal.map,
       {
         zoom: 17,
         pixelRatio: window.devicePixelRatio || 1
@@ -122,8 +104,8 @@ export class HomePage {
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
     var ui = H.ui.UI.createDefault(this.map, this.defaultLayers);
     ui.removeControl("mapsettings");
-    // create custom one
-    var ms = new H.ui.MapSettingsControl({
+    // create custom map settings (icons on map)
+    var customMapSettings = new H.ui.MapSettingsControl({
       baseLayers: [{
         label: "3D", layer: this.defaultLayers.vector.normal.map
       }, {
@@ -142,27 +124,22 @@ export class HomePage {
       }
       ]
     });
-    ui.addControl("customized", ms);
-    var mapSettings = ui.getControl('customized');
-    var zoom = ui.getControl('zoom');
+    ui.addControl("custom-mapsettings", customMapSettings);
 
+    var mapSettings = ui.getControl('custom-mapsettings');
+    var zoom = ui.getControl('zoom');
     mapSettings.setAlignment('top-right');
     zoom.setAlignment('right-top');
-    if (style === "3D") {
-      this.map.getViewModel().setLookAtData({ tilt: 60 });
-    }
+    
 
     this.map.addEventListener('baselayerchange', (data) => {
-      //let mapState = this.map.getBaseLayer().getProvider().getStyleInternal().getState();
       let mapConfig = this.map.getBaseLayer().getProvider().getStyleInternal().getConfig();
-      console.log(JSON.stringify(mapConfig));
-      //console.log(this.map.getLayers().asArray());
       if (mapConfig === null || (mapConfig && mapConfig.sources && mapConfig.sources.omv)) {
         this.map.getViewModel().setLookAtData({ tilt: 60 });
       } else {
         this.map.getViewModel().setLookAtData({ tilt: 0 });
       }
-    })
+    });
     this.getLocation(this.map);
 
 
@@ -182,9 +159,9 @@ export class HomePage {
 
     }
   }
+
   getCurrentPosition() {
     this.getLocation(this.map.setZoom(17));
-
   }
 
   getLocation(map) {
@@ -192,11 +169,10 @@ export class HomePage {
       {
         maximumAge: 1000, timeout: 2000,
         enableHighAccuracy: true
-
       }
     ).then((resp) => {
-      let lat = resp.coords.latitude
-      let lng = resp.coords.longitude
+      let lat = resp.coords.latitude;
+      let lng = resp.coords.longitude;
       this.currentLocation.lat = resp.coords.latitude;
       this.currentLocation.lng = resp.coords.longitude;
       this.moveMapToGiven(map, lat, lng);
@@ -208,40 +184,25 @@ export class HomePage {
   }
 
   moveMapToGiven(map, lat, lng) {
-
     var icon = new H.map.Icon('../../../assets/images/current_location.png');
     // Create a marker using the previously instantiated icon:
     var marker = new H.map.Marker({ lat: lat, lng: lng }, { icon: icon });
-
     // Add the marker to the map:
     map.addObject(marker);
     map.setCenter({ lat: lat, lng: lng });
   }
 
-
-
   addMarker(lat, lng, img) {
     var icon = new H.map.Icon(img);
     // Create a marker using the previously instantiated icon:
     var marker = new H.map.Marker({ lat: lat, lng: lng }, { icon: icon });
-
     // Add the marker to the map:
     this.map.addObject(marker);
-  }
-
-  toggle3DMaps() {
-    console.log(this.is3DChecked);
-    if (!this.is3DChecked) {
-      setTimeout(() => {
-        this.loadmap("3D");
-      }, 1000);
-    }
   }
 
   enable3DMaps() {
     this.map.setBaseLayer(this.defaultLayers.vector.normal.map);
   }
-
 
   reverseGeocode(platform, lat, lng, index) {
     var prox = lat + ',' + lng + ',56';
@@ -268,13 +229,11 @@ export class HomePage {
     });
   }
 
-
   showBikeDetails(bike) {
-
     this.selectedBike = bike;
-    this.selectedBike.id = bike.id;
     this.isDetailsVisible = true;
   }
+
   reserveBike() {
     //this.selectedBike=bikeS;
     this.storage.get('token').then((token) => {
@@ -291,4 +250,5 @@ export class HomePage {
       });
     });
   }
+
 }
