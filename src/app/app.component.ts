@@ -24,6 +24,11 @@ export class AppComponent {
       icon: 'home'
     },
     {
+      title: 'My Reservation',
+      url: '/myreservation',
+      icon: 'clipboard'
+    },
+    {
       title: 'Logout',
       url: '/login',
       icon: 'exit'
