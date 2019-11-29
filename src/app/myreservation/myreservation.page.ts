@@ -246,8 +246,8 @@ export class MyreservationPage implements OnInit {
           lineHeadCap: 'arrow-head' 
         } */
         style: {
-          lineWidth: 5,
-          strokeColor: 'rgba(0, 128, 255, 0.7)',
+          lineWidth: 6,
+          strokeColor: 'rgba(0, 72, 255, 0.8)',
           lineDash: [0, 2]
           }
       });
