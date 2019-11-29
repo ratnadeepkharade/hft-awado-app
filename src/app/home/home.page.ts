@@ -18,7 +18,7 @@ declare var H: any;
 export class HomePage {
   private platform: any;
   private map: any;
-  private defaultLayers:any;
+  private defaultLayers: any;
 
   bikes = [];
   bikeApi: Observable<any>;
@@ -70,22 +70,18 @@ export class HomePage {
         const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
         this.bikeApi = this.httpClient.get(url, { headers });
         this.bikeApi.subscribe((resp) => {
-          console.log('my data: ', resp);
+          console.log("bikes response", resp);
           this.bikes = resp;
           for (let i = 0; i < this.bikes.length; i++) {
-            var beforeDotStr = '' + this.bikes[i].distance;
-            var beforeDot = beforeDotStr.split('.')[0];
-            var afterDotArr = beforeDotStr.split('.')[1].split('');
-            var afterDot = afterDotArr[0] + afterDotArr[1];
-            this.bikes[i].distance = beforeDot + '.' + afterDot;
+            this.bikes[i].distance = this.bikes[i].distance.toFixed(2);;
             this.reverseGeocode(this.platform, this.bikes[i].lat, this.bikes[i].lon, i);
           }
         }, (error) => console.log(error));
       });
     }, er => {
-      alert('Can not retrieve Location')
+      alert('Can not retrieve location');
     }).catch((error) => {
-      alert('Error getting location - ' + JSON.stringify(error))
+      alert('Error getting location - ' + JSON.stringify(error));
     });
   }
 
@@ -106,31 +102,31 @@ export class HomePage {
     ui.removeControl("mapsettings");
     // create custom map settings (icons on map)
     var customMapSettings = new H.ui.MapSettingsControl({
-      baseLayers: [{
-        label: "3D", layer: this.defaultLayers.vector.normal.map
-      }, {
-        label: "Normal", layer: this.defaultLayers.raster.normal.map
-      }, {
-        label: "Satellite", layer: this.defaultLayers.raster.satellite.map
-      }, {
-        label: "Terrain", layer: this.defaultLayers.raster.terrain.map
-      }
+      baseLayers: [
+        {
+          label: "3D", layer: this.defaultLayers.vector.normal.map
+        }, {
+          label: "Normal", layer: this.defaultLayers.raster.normal.map
+        }, {
+          label: "Satellite", layer: this.defaultLayers.raster.satellite.map
+        }, {
+          label: "Terrain", layer: this.defaultLayers.raster.terrain.map
+        }
       ],
-      layers: [{
-        label: "layer.traffic", layer: this.defaultLayers.vector.normal.traffic
-      },
-      {
-        label: "layer.incidents", layer: this.defaultLayers.vector.normal.trafficincidents
-      }
+      layers: [
+        {
+          label: "layer.traffic", layer: this.defaultLayers.vector.normal.traffic
+        },
+        {
+          label: "layer.incidents", layer: this.defaultLayers.vector.normal.trafficincidents
+        }
       ]
     });
     ui.addControl("custom-mapsettings", customMapSettings);
-
     var mapSettings = ui.getControl('custom-mapsettings');
     var zoom = ui.getControl('zoom');
     mapSettings.setAlignment('top-right');
     zoom.setAlignment('right-top');
-    
 
     this.map.addEventListener('baselayerchange', (data) => {
       let mapConfig = this.map.getBaseLayer().getProvider().getStyleInternal().getConfig();
@@ -141,7 +137,6 @@ export class HomePage {
       }
     });
     this.getLocation(this.map);
-
 
     var img = ['../../../assets/images/100_percent.png', '../../../assets/images/75_percent.png', '../../../assets/images/50_percent.png', '../../../assets/images/25_percent.png', '../../../assets/images/0_percent.png'];
     for (let i = 0; i < this.bikes.length; i++) {
