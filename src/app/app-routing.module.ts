@@ -25,6 +25,10 @@ const routes: Routes = [
   },  {
     path: 'myreservation',
     loadChildren: () => import('./myreservation/myreservation.module').then( m => m.MyreservationPageModule)
+  },
+  {
+    path: 'hirebike',
+    loadChildren: () => import('./hirebike/hirebike.module').then( m => m.HirebikePageModule)
   }
 
   

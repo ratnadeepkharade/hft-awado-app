@@ -249,16 +249,6 @@ export class HomePage {
  
 
   }
-  cancelReservation() {
-    this.storage.get('token').then((token) => {
-      let url = 'http://193.196.52.237:8081/reservation' + '?bikeId=' + this.selectedBike.id;
-      const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
-      this.bikeApi = this.httpClient.delete(url, { headers });
-      this.bikeApi.subscribe((resp) => {
-        console.log('my data: ', resp);
-        this.isBikeReserved=false;
-      }, (error) => console.log(error));
-    });
-  }
+ 
   
 }
