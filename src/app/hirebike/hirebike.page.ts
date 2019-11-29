@@ -74,6 +74,7 @@ export class HirebikePage implements OnInit {
         console.log('Reserved Bike', resp);
         if (resp.data) {
           this.reservedBike = resp.data;
+          this.isBikeHired=this.reservedBike.rented;
           //Call Bike Details api
           let bikeDetailsUrl = 'http://193.196.52.237:8081/bikes/' + this.reservedBike.bikeId;
           let bikeDetailsApi = this.httpClient.get(bikeDetailsUrl, { headers });
@@ -101,10 +102,9 @@ export class HirebikePage implements OnInit {
       bikeApi.subscribe((resp) => {
         console.log('my data: ', resp);
         this.toastService.showToast("Trip Started");
-        this.isBikeHired=true;
       }, (error) => {
         console.log(error)
-        this.toastService.showToast("Unable to Hire Bike")
+        this.toastService.showToast("This is ongoing Trip")
       });
     });
 
