@@ -22,6 +22,7 @@ export class HirebikePage implements OnInit {
 
   reservedBike: any = {};
   bikeDetails: any = {};
+  address="sample";
   isBikeHired=false;
 
   noReservation = true;
@@ -82,7 +83,7 @@ export class HirebikePage implements OnInit {
             console.log('Bike Details', resp);
             this.bikeDetails = resp.data;
             this.noReservation = false;
-
+            this.reverseGeocode(this.platform, this.bikeDetails.lat, this.bikeDetails.lon);
             // display map
             setTimeout(() => {
               this.loadmap();
@@ -230,7 +231,29 @@ export class HirebikePage implements OnInit {
     // Add the marker to the map:
     this.map.addObject(marker);
   }
+  reverseGeocode(platform, lat, lng) {
+    var prox = lat + ',' + lng + ',56';
+    var geocoder = platform.getGeocodingService(),
+      parameters = {
+        prox: prox,
+        mode: 'retrieveAddresses',
+        maxresults: '1',
+        gen: '9'
+      };
 
+    geocoder.reverseGeocode(parameters, result => {
+      console.log(result);
+      var streets = result.Response.View[0].Result[0].Location.Address.Street;
+      var houseNumber = result.Response.View[0].Result[0].Location.Address.HouseNumber;
+      var zipcode = result.Response.View[0].Result[0].Location.Address.PostalCode;
+     
+      this.address = streets;
+     
+
+    }, (error) => {
+      alert(error);
+    });
+  }
 
   // Define a callback function to process the routing response:
   onResult(result) {
