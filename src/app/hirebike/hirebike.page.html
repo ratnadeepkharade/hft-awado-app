@@ -25,7 +25,22 @@
   <div class="bike-details-container">
     <div class="inner">
       <div class="button-container">
-        <ion-grid>
+
+        <ion-grid *ngIf="isBikeHired" class="directions">
+          <ion-item class="waypoint-wrapper">
+            <span [innerHTML]="wayPointsInfo"></span>
+          </ion-item>
+          <ion-list class="my-ion-list">
+            <ion-item *ngFor="let maneuver of maneuverList">
+              <li><span [className]="'arrow '+ maneuver.action"></span><span [innerHTML]="maneuver.instruction"></span>
+              </li>
+            </ion-item>
+            <ion-item>
+              <li><span [innerHTML]="routeSummary"></span></li>
+            </ion-item>
+          </ion-list>
+        </ion-grid>
+        <ion-grid *ngIf="!isBikeHired">
           <ion-row>
             <ion-col>Bike Name</ion-col>
             <ion-col>{{bikeDetails.name}}</ion-col>
@@ -34,6 +49,8 @@
             <ion-col>Bike Location</ion-col>
             <ion-col>{{address}}</ion-col>
           </ion-row>
+        </ion-grid>
+        <ion-grid>
           <ion-row *ngIf="!isBikeHired">
             <ion-col>
               <ion-button size="medium" expand="block" (click)="startTrip()">Start Trip</ion-button>
