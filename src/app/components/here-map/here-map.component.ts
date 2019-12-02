@@ -5,6 +5,7 @@ import { Observable, Subject } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
 import { ToastService } from '../../services/toast.service';
+import { MapDataService } from 'src/app/services/map-data.service';
 
 declare var H: any;
 
@@ -42,7 +43,8 @@ export class HereMapComponent implements OnInit {
     public restService: RestService,
     public httpClient: HttpClient,
     private storage: Storage,
-    private toastService: ToastService) {
+    private toastService: ToastService,
+    private mapDataService: MapDataService) {
 
     this.platform = new H.service.Platform({
       'apikey': 'tiVTgBnPbgV1spie5U2MSy-obhD9r2sGiOCbBzFY2_k'
@@ -114,6 +116,7 @@ export class HereMapComponent implements OnInit {
      */
     this.addRouteShapeToMap(route);
     this.addManueversToMap(route);
+    this.mapDataService.mapDataSubject.next(route);
 
     //addWaypointsToPanel(route.waypoint);
     //addManueversToPanel(route);
