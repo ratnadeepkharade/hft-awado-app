@@ -15,10 +15,12 @@ declare var H: any;
   styleUrls: ['home.page.scss'],
 })
 
-export class HomePage {
+export class HomePage implements OnInit {
   private platform: any;
   private map: any;
   private defaultLayers: any;
+  private locationsGroup: any;
+  private currentUserPosition = {lat: 0, lng: 0};
 
   bikes = [];
   bikeApi: Observable<any>;
@@ -27,6 +29,8 @@ export class HomePage {
   public isDetailsVisible = false;
   public selectedBike = { id: 0 };
   public isBikeReserved = false;
+
+  public currentLocationMarker: any;
 
   @ViewChild("mapElement", { static: false })
   public mapElement: ElementRef;
@@ -40,52 +44,33 @@ export class HomePage {
     this.platform = new H.service.Platform({
       'apikey': 'tiVTgBnPbgV1spie5U2MSy-obhD9r2sGiOCbBzFY2_k'
     });
-  }
 
-  ngOnInit() {
-    this.getBikesList();
-  }
-
-  ngAfterViewInit() {
-    setTimeout(() => {
-      this.loadmap();
-    }, 700);
-
-    window.addEventListener('resize', () => this.map.getViewPort().resize());
-  }
-
-  getBikesList() {
-    this.geolocation.getCurrentPosition({
-      maximumAge: 1000, timeout: 4000,
-      enableHighAccuracy: true
-    }).then((resp) => {
-      let lat = resp.coords.latitude;
-      let lng = resp.coords.longitude;
-
-      this.currentLocation.lat = resp.coords.latitude;
-      this.currentLocation.lng = resp.coords.longitude;
-
-      this.storage.get('token').then((token) => {
-        let url = 'http://193.196.52.237:8081/bikes' + '?lat=' + lat + '&lng=' + lng;
-        const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
-        this.bikeApi = this.httpClient.get(url, { headers });
-        this.bikeApi.subscribe((resp) => {
-          console.log("bikes response", resp);
-          this.bikes = resp;
-          for (let i = 0; i < this.bikes.length; i++) {
-            this.bikes[i].distance = this.bikes[i].distance.toFixed(2);;
-            this.reverseGeocode(this.platform, this.bikes[i].lat, this.bikes[i].lon, i);
-          }
-        }, (error) => console.log(error));
-      });
-    }, er => {
-      alert('Can not retrieve location');
-    }).catch((error) => {
-      alert('Error getting location - ' + JSON.stringify(error));
+    let watch = this.geolocation.watchPosition({ enableHighAccuracy: true, maximumAge: 10000 });
+    watch.subscribe((position) => {
+      console.log(position.coords.latitude);
+      console.log(position.coords.longitude);
+      this.currentUserPosition.lat = position.coords.latitude;
+      this.currentUserPosition.lng = position.coords.longitude;
+      this.currentLocationMarker.setGeometry( {lat:position.coords.latitude, lng:position.coords.longitude})
+    }, (errorObj) => {
+      console.log(errorObj.code + ": " + errorObj.message);
     });
   }
 
-  loadmap() {
+  ngOnInit() {
+  }
+
+  ngAfterViewInit() {
+    this.initializeMap();
+    window.addEventListener('resize', () => this.map.getViewPort().resize());
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));  
+    },100);
+    this.getUserLocation();
+    this.getBikesList();
+  }
+
+  initializeMap() {
     // Obtain the default map types from the platform object
     this.defaultLayers = this.platform.createDefaultLayers();
     this.map = new H.Map(
@@ -128,7 +113,10 @@ export class HomePage {
     mapSettings.setAlignment('top-right');
     zoom.setAlignment('right-top');
 
-    this.map.addEventListener('baselayerchange', (data) => {
+    this.map.getViewPort().setPadding(30, 30, 30, 30);
+
+    // Listen for base layer change event (eg. from satellite to 3D)
+    this.map.addEventListener('baselayerchange', (evt) => {
       let mapConfig = this.map.getBaseLayer().getProvider().getStyleInternal().getConfig();
       if (mapConfig === null || (mapConfig && mapConfig.sources && mapConfig.sources.omv)) {
         this.map.getViewModel().setLookAtData({ tilt: 60 });
@@ -136,8 +124,48 @@ export class HomePage {
         this.map.getViewModel().setLookAtData({ tilt: 0 });
       }
     });
-    this.getLocation(this.map);
 
+    // listen for map click event
+    this.map.addEventListener('tap', (event) =>{
+      console.log(event.type, event.currentPointer.type);
+    });
+
+    this.locationsGroup = new H.map.Group();
+  }
+
+  getBikesList() {
+    this.geolocation.getCurrentPosition({
+      maximumAge: 1000, timeout: 4000,
+      enableHighAccuracy: true
+    }).then((resp) => {
+      let lat = resp.coords.latitude;
+      let lng = resp.coords.longitude;
+
+      this.currentUserPosition.lat = resp.coords.latitude;
+      this.currentUserPosition.lng = resp.coords.longitude;
+
+      this.storage.get('token').then((token) => {
+        let url = 'http://193.196.52.237:8081/bikes' + '?lat=' + lat + '&lng=' + lng;
+        const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
+        this.bikeApi = this.httpClient.get(url, { headers });
+        this.bikeApi.subscribe((resp) => {
+          console.log("bikes response", resp);
+          this.bikes = resp;
+          for (let i = 0; i < this.bikes.length; i++) {
+            this.bikes[i].distance = this.bikes[i].distance.toFixed(2);;
+            this.reverseGeocode(this.platform, this.bikes[i].lat, this.bikes[i].lon, i);
+          }
+          this.showBikesOnMap();
+        }, (error) => console.log(error));
+      });
+    }, er => {
+      //alert('Can not retrieve location');
+    }).catch((error) => {
+      //alert('Error getting location - ' + JSON.stringify(error));
+    });
+  }
+
+  showBikesOnMap() {
     var img = ['../../../assets/images/100_percent.png', '../../../assets/images/75_percent.png', '../../../assets/images/50_percent.png', '../../../assets/images/25_percent.png', '../../../assets/images/0_percent.png'];
     for (let i = 0; i < this.bikes.length; i++) {
       if (this.bikes[i].batteryPercentage < 100 && this.bikes[i].batteryPercentage >= 75) {
@@ -151,18 +179,28 @@ export class HomePage {
       } else if (this.bikes[i].batteryPercentage < 25 && this.bikes[i].batteryPercentage >= 0) {
         this.addMarker(Number(this.bikes[i].lat), Number(this.bikes[i].lon), img[3]);
       }
-
     }
+
+    this.map.addObject(this.locationsGroup);
+    this.setZoomLevelToPointersGroup();
   }
 
+  //TODO change this logic
   getCurrentPosition() {
-    this.getLocation(this.map.setZoom(17));
+    this.map.setZoom(17);
+    this.map.setCenter({ lat: this.currentUserPosition.lat, lng: this.currentUserPosition.lng });
   }
 
-  getLocation(map) {
+  setZoomLevelToPointersGroup() {
+    this.map.getViewModel().setLookAtData({
+      bounds: this.locationsGroup.getBoundingBox()
+    });
+  }
+
+  getUserLocation() {
     this.geolocation.getCurrentPosition(
       {
-        maximumAge: 1000, timeout: 2000,
+        maximumAge: 1000, timeout: 4000,
         enableHighAccuracy: true
       }
     ).then((resp) => {
@@ -170,21 +208,32 @@ export class HomePage {
       let lng = resp.coords.longitude;
       this.currentLocation.lat = resp.coords.latitude;
       this.currentLocation.lng = resp.coords.longitude;
-      this.moveMapToGiven(map, lat, lng);
+      this.showUserLocationOnMap(lat, lng);
     }, er => {
-      alert('Can not retrieve Location')
+      //alert('Can not retrieve Location')
+      this.showUserLocationOnMap(this.currentUserPosition.lat, this.currentUserPosition.lng);
     }).catch((error) => {
-      alert('Error getting location - ' + JSON.stringify(error))
+      this.showUserLocationOnMap(this.currentUserPosition.lat, this.currentUserPosition.lng);
+      //alert('Error getting location - ' + JSON.stringify(error))
     });
   }
 
-  moveMapToGiven(map, lat, lng) {
-    var icon = new H.map.Icon('../../../assets/images/current_location.png');
+  showUserLocationOnMap(lat, lng) {
+    let svgMarkup = '<svg width="24" height="24" ' +
+    'xmlns="http://www.w3.org/2000/svg">' +
+    '<circle cx="10" cy="10" r="10" ' +
+      'fill="#007cff" stroke="white" stroke-width="2"  />' +
+    '</svg>';
+    let icon = new H.map.Icon(svgMarkup);
+    //let icon = new H.map.Icon('../../../assets/images/current_location.png');
     // Create a marker using the previously instantiated icon:
-    var marker = new H.map.Marker({ lat: lat, lng: lng }, { icon: icon });
+    this.currentLocationMarker = new H.map.Marker({ lat: lat, lng: lng }, { icon: icon });
     // Add the marker to the map:
-    map.addObject(marker);
-    map.setCenter({ lat: lat, lng: lng });
+    this.locationsGroup.addObjects([this.currentLocationMarker]);
+    this.setZoomLevelToPointersGroup();
+
+    //this.map.addObject(marker);
+    //this.map.setCenter({ lat: lat, lng: lng });
   }
 
   addMarker(lat, lng, img) {
@@ -192,7 +241,9 @@ export class HomePage {
     // Create a marker using the previously instantiated icon:
     var marker = new H.map.Marker({ lat: lat, lng: lng }, { icon: icon });
     // Add the marker to the map:
-    this.map.addObject(marker);
+    //this.map.addObject(marker);
+
+    this.locationsGroup.addObjects([marker]);
   }
 
   enable3DMaps() {
@@ -210,7 +261,6 @@ export class HomePage {
       };
 
     geocoder.reverseGeocode(parameters, result => {
-      console.log(result);
       var streets = result.Response.View[0].Result[0].Location.Address.Street;
       var houseNumber = result.Response.View[0].Result[0].Location.Address.HouseNumber;
       var zipcode = result.Response.View[0].Result[0].Location.Address.PostalCode;
