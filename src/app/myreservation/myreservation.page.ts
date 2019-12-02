@@ -188,9 +188,9 @@ export class MyreservationPage implements OnInit {
           alert(error.message);
         });
     }, er => {
-      alert('Can not retrieve Location')
+      console.log('Can not retrieve Location');
     }).catch((error) => {
-      alert('Error getting location - ' + JSON.stringify(error))
+      console.log('Error getting location - ' + JSON.stringify(error));
     });
   }
 

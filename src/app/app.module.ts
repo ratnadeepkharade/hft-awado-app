@@ -17,6 +17,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { RestService } from './rest.service';
 import { ToastService } from './services/toast.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HereMapComponent } from './components/here-map/here-map.component';
 
 @NgModule({
   declarations: [AppComponent],
@@ -37,6 +38,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     RestService,
     NativeGeocoder,
     ToastService,
+    HereMapComponent,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

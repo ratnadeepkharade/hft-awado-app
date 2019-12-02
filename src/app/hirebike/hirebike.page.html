@@ -10,15 +10,16 @@
 </ion-header>
 
 <ion-content>
-  <div>
+  <!--div>
     <ion-item *ngIf="!isBikeHired">
       <ion-input type="text" [(ngModel)]="Destination" placeholder="Enter Destination"></ion-input>
     </ion-item>
     <ion-item *ngIf="isBikeHired">
       <ion-input type="text" [(ngModel)]="Destination" placeholder="Ongoing Trip" readonly></ion-input>
     </ion-item>
-  </div>
-  <div #mapElement style="width: 100%; height: 100%" id="mapContainer"></div>
+  </div-->
+  <!--div #mapElement style="width: 100%; height: 100%" id="mapContainer"></div-->
+  <app-here-map [startRideSubject]="startRideSubject" [gotReservedBikeSubject]="gotReservedBikeSubject"></app-here-map>
 </ion-content>
 <ion-footer>
   <div class="bike-details-container">
@@ -48,5 +49,4 @@
       </div>
     </div>
   </div>
-  
 </ion-footer>
