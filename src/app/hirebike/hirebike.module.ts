@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { HirebikePageRoutingModule } from './hirebike-routing.module';
 
 import { HirebikePage } from './hirebike.page';
+import { HereMapComponent } from '../components/here-map/here-map.component';
 
 @NgModule({
   imports: [
@@ -15,6 +16,7 @@ import { HirebikePage } from './hirebike.page';
     IonicModule,
     HirebikePageRoutingModule
   ],
-  declarations: [HirebikePage]
+  declarations: [HirebikePage,
+    HereMapComponent]
 })
 export class HirebikePageModule {}
