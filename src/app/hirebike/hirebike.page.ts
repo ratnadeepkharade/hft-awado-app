@@ -7,7 +7,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
 import { ToastService } from '../services/toast.service';
 import { Router } from '@angular/router';
+import { MapDataService } from '../services/map-data.service';
 declare var H: any;
+
 @Component({
   selector: 'app-hirebike',
   templateUrl: './hirebike.page.html',
@@ -23,18 +25,39 @@ export class HirebikePage implements OnInit {
   isBikeHired = false;
   noReservation = true;
 
+  currentRoute: any;
+  routeSummary: any;
+  wayPointsInfo:any;
+
   startRideSubject: Subject<any> = new Subject();
   gotReservedBikeSubject: Subject<any> = new Subject();
+  maneuverList: any = [];
 
   constructor(private geolocation: Geolocation,
     public restService: RestService,
     public httpClient: HttpClient,
     private storage: Storage,
     private toastService: ToastService,
-    private router: Router) {
-      this.platform = new H.service.Platform({
-        'apikey': 'tiVTgBnPbgV1spie5U2MSy-obhD9r2sGiOCbBzFY2_k'
-      });
+    private router: Router,
+    private mapDataService: MapDataService) {
+    this.platform = new H.service.Platform({
+      'apikey': 'tiVTgBnPbgV1spie5U2MSy-obhD9r2sGiOCbBzFY2_k'
+    });
+    this.mapDataService.mapDataSubject.subscribe(receiveddata => {
+      console.log('data received ');
+      console.log(receiveddata);
+      this.currentRoute = receiveddata;
+      let content = '';
+      content += 'Total distance: ' + receiveddata.summary.distance + 'm. ';
+      content += 'Travel Time: ' + Math.floor(receiveddata.summary.travelTime / 60) + ' minutes ' + (receiveddata.summary.travelTime % 60) + ' seconds.' + ' (in current traffic)';
+      this.routeSummary = content;
+      this.showRouteInfoPanel(receiveddata);
+      let waypointLabels = [];
+      for (let i = 0; i < receiveddata.waypoint.length; i += 1) {
+        waypointLabels.push(receiveddata.waypoint[i].label)
+      }
+      this.wayPointsInfo = waypointLabels.join(' - ');
+    });
   }
 
   ngOnInit() {
@@ -43,6 +66,31 @@ export class HirebikePage implements OnInit {
 
   ngAfterViewInit() {
 
+  }
+
+  showRouteInfoPanel(route) {
+    // Add a marker for each maneuver
+    let maneuverList = [];
+    for (let i = 0; i < route.leg.length; i += 1) {
+      for (let j = 0; j < route.leg[i].maneuver.length; j += 1) {
+        // Get the next maneuver.
+        let maneuver = route.leg[i].maneuver[j];
+        maneuverList.push(maneuver);
+
+        // var li = document.createElement('li'),
+        //   spanArrow = document.createElement('span'),
+        //   spanInstruction = document.createElement('span');
+
+        // spanArrow.className = 'arrow ' + maneuver.action;
+        // spanInstruction.innerHTML = maneuver.instruction;
+        // li.appendChild(spanArrow);
+        // li.appendChild(spanInstruction);
+
+        // nodeOL.appendChild(li);
+      }
+    }
+
+    this.maneuverList = maneuverList;
   }
 
   getReservedBike() {
@@ -64,7 +112,7 @@ export class HirebikePage implements OnInit {
             this.bikeDetails = resp.data;
             this.noReservation = false;
             this.reverseGeocode(this.platform, this.bikeDetails.lat, this.bikeDetails.lon);
-            
+
             //pass reserved bike subject here map
             this.gotReservedBikeSubject.next(resp.data);
           }, (reservedBikeError) => console.log(reservedBikeError));
