@@ -20,12 +20,11 @@ export class HomePage implements OnInit {
   private map: any;
   private defaultLayers: any;
   private locationsGroup: any;
-  private currentUserPosition = {lat: 0, lng: 0};
+  private currentUserPosition = {lat: 48.783480, lng: 9.180319};
 
   bikes = [];
   bikeApi: Observable<any>;
 
-  private currentLocation = { lat: 0, lng: 0 };
   public isDetailsVisible = false;
   public selectedBike = { id: 0 };
   public isBikeReserved = false;
@@ -206,8 +205,8 @@ export class HomePage implements OnInit {
     ).then((resp) => {
       let lat = resp.coords.latitude;
       let lng = resp.coords.longitude;
-      this.currentLocation.lat = resp.coords.latitude;
-      this.currentLocation.lng = resp.coords.longitude;
+      this.currentUserPosition.lat = resp.coords.latitude;
+      this.currentUserPosition.lng = resp.coords.longitude;
       this.showUserLocationOnMap(lat, lng);
     }, er => {
       //alert('Can not retrieve Location')
