@@ -23,8 +23,8 @@ export class MyreservationPage implements OnInit {
 
   reservedBike: any = {};
   bikeDetails: any = {};
-  isBikeHired=false;
-
+  isBikeHired = false;
+  address="sample";
   noReservation = true;
 
   private currentLocation = { lat: 0, lng: 0 };
@@ -82,6 +82,7 @@ export class MyreservationPage implements OnInit {
           bikeDetailsApi.subscribe((resp: any) => {
             console.log('Bike Details', resp);
             this.bikeDetails = resp.data;
+            this.reverseGeocode(this.platform, this.bikeDetails.lat, this.bikeDetails.lon);
             this.noReservation = false;
 
             // display map
@@ -183,9 +184,9 @@ export class MyreservationPage implements OnInit {
 
       // show route on map
       this.mapRouter.calculateRoute(this.routingParameters, this.onResult.bind(this),
-      (error) => {
-        alert(error.message);
-      });
+        (error) => {
+          alert(error.message);
+        });
     }, er => {
       alert('Can not retrieve Location')
     }).catch((error) => {
@@ -208,6 +209,29 @@ export class MyreservationPage implements OnInit {
     var marker = new H.map.Marker({ lat: lat, lng: lng }, { icon: icon });
     // Add the marker to the map:
     this.map.addObject(marker);
+  }
+  reverseGeocode(platform, lat, lng) {
+    var prox = lat + ',' + lng + ',56';
+    var geocoder = platform.getGeocodingService(),
+      parameters = {
+        prox: prox,
+        mode: 'retrieveAddresses',
+        maxresults: '1',
+        gen: '9'
+      };
+
+    geocoder.reverseGeocode(parameters, result => {
+      console.log(result);
+      var streets = result.Response.View[0].Result[0].Location.Address.Street;
+      var houseNumber = result.Response.View[0].Result[0].Location.Address.HouseNumber;
+      var zipcode = result.Response.View[0].Result[0].Location.Address.PostalCode;
+     
+      this.address = streets;
+     
+
+    }, (error) => {
+      alert(error);
+    });
   }
 
 
@@ -251,7 +275,7 @@ export class MyreservationPage implements OnInit {
           lineWidth: 6,
           strokeColor: 'rgba(0, 72, 255, 0.8)',
           lineDash: [0, 2]
-          }
+        }
       });
 
       // Add the route polyline and the two markers to the map:
@@ -262,10 +286,11 @@ export class MyreservationPage implements OnInit {
       //this.map.setZoom(this.map.getZoom() - 4.3, true);
     }
   };
+
   hireBike() {
     if (this.isBikeHired)
-    this.toastService.showToast("You already Hired this bike");
+      this.toastService.showToast("You already Hired this bike");
     else
-    this.router.navigateByUrl('/hirebike');
+      this.router.navigateByUrl('/hirebike');
   }
 }

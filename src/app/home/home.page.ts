@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
 import { ToastService } from '../services/toast.service';
-
+import { Router } from '@angular/router';
 
 declare var H: any;
 
@@ -35,6 +35,7 @@ export class HomePage implements OnInit {
   public mapElement: ElementRef;
 
   constructor(private geolocation: Geolocation,
+    private router: Router,
     public restService: RestService,
     public httpClient: HttpClient,
     private storage: Storage,
@@ -288,6 +289,7 @@ export class HomePage implements OnInit {
         console.log('my data: ', resp);
         this.isBikeReserved = true;
         this.toastService.showToast("Reservation Successful!");
+        this.router.navigateByUrl('/myreservation');
       }, (error) => {
         console.log(error)
         this.toastService.showToast("Only one bike may be reserved or rented at a time")
