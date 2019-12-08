@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { RestService } from '../rest.service';
 import { Observable } from 'rxjs';
@@ -6,6 +6,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
 import { ToastService } from '../services/toast.service';
 import { Router } from '@angular/router';
+import { LocationService } from '../services/location.service';
+import { LoadingService } from '../services/loading.service';
 
 declare var H: any;
 
@@ -15,12 +17,12 @@ declare var H: any;
   styleUrls: ['home.page.scss'],
 })
 
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   private platform: any;
   private map: any;
   private defaultLayers: any;
   private locationsGroup: any;
-  private currentUserPosition = {lat: 48.783480, lng: 9.180319};
+  private currentUserPosition = { lat: 48.783480, lng: 9.180319 };
 
   bikes = [];
   bikeApi: Observable<any>;
@@ -39,21 +41,12 @@ export class HomePage implements OnInit {
     public restService: RestService,
     public httpClient: HttpClient,
     private storage: Storage,
-    private toastService: ToastService) {
+    private toastService: ToastService,
+    public locationService: LocationService,
+    public loadingService: LoadingService) {
 
     this.platform = new H.service.Platform({
       'apikey': 'tiVTgBnPbgV1spie5U2MSy-obhD9r2sGiOCbBzFY2_k'
-    });
-
-    let watch = this.geolocation.watchPosition({ enableHighAccuracy: true, maximumAge: 10000 });
-    watch.subscribe((position) => {
-      console.log(position.coords.latitude);
-      console.log(position.coords.longitude);
-      this.currentUserPosition.lat = position.coords.latitude;
-      this.currentUserPosition.lng = position.coords.longitude;
-      this.currentLocationMarker.setGeometry( {lat:position.coords.latitude, lng:position.coords.longitude})
-    }, (errorObj) => {
-      console.log(errorObj.code + ": " + errorObj.message);
     });
   }
 
@@ -61,13 +54,30 @@ export class HomePage implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.initializeMap();
     window.addEventListener('resize', () => this.map.getViewPort().resize());
-    setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));  
-    },100);
-    this.getUserLocation();
+  }
+
+  ionViewWillEnter() {
+    this.currentUserPosition.lat = this.locationService.currentUserPosition.lat;
+    this.currentUserPosition.lng = this.locationService.currentUserPosition.lng;
+    this.initializeMap();
+    if (this.currentLocationMarker) {
+      this.currentLocationMarker.setGeometry({ lat: this.currentUserPosition.lat, lng: this.currentUserPosition.lng })
+    } else {
+      this.showUserLocationOnMap(this.currentUserPosition.lat, this.currentUserPosition.lng);
+    }
     this.getBikesList();
+
+    this.locationService.liveLocationSubject.subscribe((position) => {
+      console.log('got location inside home subscription');
+      this.currentUserPosition.lat = position.lat;
+      this.currentUserPosition.lng = position.lng;
+      if (this.currentLocationMarker) {
+        this.currentLocationMarker.setGeometry({ lat: this.currentUserPosition.lat, lng: this.currentUserPosition.lng })
+      } else {
+        this.showUserLocationOnMap(this.currentUserPosition.lat, this.currentUserPosition.lng);
+      }
+    });
   }
 
   initializeMap() {
@@ -77,6 +87,7 @@ export class HomePage implements OnInit {
       this.mapElement.nativeElement,
       this.defaultLayers.raster.normal.map,
       {
+        center: { lat: this.locationService.preiousUserPosition.lat, lng: this.locationService.preiousUserPosition.lng },
         zoom: 17,
         pixelRatio: window.devicePixelRatio || 1
       }
@@ -126,7 +137,7 @@ export class HomePage implements OnInit {
     });
 
     // listen for map click event
-    this.map.addEventListener('tap', (event) =>{
+    this.map.addEventListener('tap', (event) => {
       console.log(event.type, event.currentPointer.type);
     });
 
@@ -134,34 +145,22 @@ export class HomePage implements OnInit {
   }
 
   getBikesList() {
-    this.geolocation.getCurrentPosition({
-      maximumAge: 1000, timeout: 4000,
-      enableHighAccuracy: true
-    }).then((resp) => {
-      let lat = resp.coords.latitude;
-      let lng = resp.coords.longitude;
-
-      this.currentUserPosition.lat = resp.coords.latitude;
-      this.currentUserPosition.lng = resp.coords.longitude;
-
-      this.storage.get('token').then((token) => {
-        let url = 'http://193.196.52.237:8081/bikes' + '?lat=' + lat + '&lng=' + lng;
-        const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
-        this.bikeApi = this.httpClient.get(url, { headers });
-        this.bikeApi.subscribe((resp) => {
-          console.log("bikes response", resp);
-          this.bikes = resp;
-          for (let i = 0; i < this.bikes.length; i++) {
-            this.bikes[i].distance = this.bikes[i].distance.toFixed(2);;
-            this.reverseGeocode(this.platform, this.bikes[i].lat, this.bikes[i].lon, i);
-          }
-          this.showBikesOnMap();
-        }, (error) => console.log(error));
-      });
-    }, er => {
-      //alert('Can not retrieve location');
-    }).catch((error) => {
-      //alert('Error getting location - ' + JSON.stringify(error));
+    this.loadingService.showLoader();
+    this.storage.get('token').then((token) => {
+      let url = 'http://193.196.52.237:8081/bikes' + '?lat=' + this.currentUserPosition.lat + '&lng=' + this.currentUserPosition.lng;
+      const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
+      this.bikeApi = this.httpClient.get(url, { headers });
+      this.bikeApi.subscribe((resp) => {
+        console.log("bikes response", resp);
+        this.bikes = resp;
+        for (let i = 0; i < this.bikes.length; i++) {
+          this.bikes[i].distance = this.bikes[i].distance.toFixed(2);;
+          this.reverseGeocode(this.platform, this.bikes[i].lat, this.bikes[i].lon, i);
+        }
+        this.showBikesOnMap();
+        this.loadingService.hideLoader();
+      }, (error) => {console.log(error)
+        this.loadingService.hideLoader();});
     });
   }
 
@@ -181,7 +180,7 @@ export class HomePage implements OnInit {
       }
     }
 
-    this.map.addObject(this.locationsGroup);
+    //this.map.addObject(this.locationsGroup);
     this.setZoomLevelToPointersGroup();
   }
 
@@ -197,39 +196,19 @@ export class HomePage implements OnInit {
     });
   }
 
-  getUserLocation() {
-    this.geolocation.getCurrentPosition(
-      {
-        maximumAge: 1000, timeout: 4000,
-        enableHighAccuracy: true
-      }
-    ).then((resp) => {
-      let lat = resp.coords.latitude;
-      let lng = resp.coords.longitude;
-      this.currentUserPosition.lat = resp.coords.latitude;
-      this.currentUserPosition.lng = resp.coords.longitude;
-      this.showUserLocationOnMap(lat, lng);
-    }, er => {
-      //alert('Can not retrieve Location')
-      this.showUserLocationOnMap(this.currentUserPosition.lat, this.currentUserPosition.lng);
-    }).catch((error) => {
-      this.showUserLocationOnMap(this.currentUserPosition.lat, this.currentUserPosition.lng);
-      //alert('Error getting location - ' + JSON.stringify(error))
-    });
-  }
-
   showUserLocationOnMap(lat, lng) {
     let svgMarkup = '<svg width="24" height="24" ' +
-    'xmlns="http://www.w3.org/2000/svg">' +
-    '<circle cx="10" cy="10" r="10" ' +
+      'xmlns="http://www.w3.org/2000/svg">' +
+      '<circle cx="10" cy="10" r="10" ' +
       'fill="#007cff" stroke="white" stroke-width="2"  />' +
-    '</svg>';
+      '</svg>';
     let icon = new H.map.Icon(svgMarkup);
     //let icon = new H.map.Icon('../../../assets/images/current_location.png');
     // Create a marker using the previously instantiated icon:
     this.currentLocationMarker = new H.map.Marker({ lat: lat, lng: lng }, { icon: icon });
     // Add the marker to the map:
     this.locationsGroup.addObjects([this.currentLocationMarker]);
+    this.map.addObject(this.locationsGroup);
     this.setZoomLevelToPointersGroup();
 
     //this.map.addObject(marker);
@@ -281,6 +260,7 @@ export class HomePage implements OnInit {
 
   reserveBike() {
     //this.selectedBike=bikeS;
+    this.loadingService.showLoader();
     this.storage.get('token').then((token) => {
       let url = 'http://193.196.52.237:8081/reservation' + '?bikeId=' + this.selectedBike.id;
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
@@ -290,11 +270,17 @@ export class HomePage implements OnInit {
         this.isBikeReserved = true;
         this.toastService.showToast("Reservation Successful!");
         this.router.navigateByUrl('/myreservation');
+        this.loadingService.hideLoader();
       }, (error) => {
-        console.log(error)
-        this.toastService.showToast("Only one bike may be reserved or rented at a time")
+        console.log(error);
+        this.loadingService.hideLoader();
+        this.toastService.showToast("Only one bike may be reserved or rented at a time");
       });
     });
+  }
+
+  ngOnDestroy(){
+    this.locationService.liveLocationSubject.unsubscribe();
   }
 
 }
