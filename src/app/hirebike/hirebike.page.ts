@@ -242,7 +242,7 @@ export class HirebikePage implements OnInit {
     // needed if child gets re-created (eg on some model changes)
     // note that subsequent subscriptions on the same subject will fail
     // so the parent has to re-create parentSubject on changes
-    this.startRideSubject.unsubscribe();
+    //this.startRideSubject.unsubscribe();
   }
 
   onSuccess(result) {

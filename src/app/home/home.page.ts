@@ -280,7 +280,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(){
-    this.locationService.liveLocationSubject.unsubscribe();
+    //this.locationService.liveLocationSubject.unsubscribe();
   }
 
 }
