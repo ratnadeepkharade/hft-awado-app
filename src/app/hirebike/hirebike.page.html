@@ -19,7 +19,13 @@
     </ion-item>
   </div-->
   <!--div #mapElement style="width: 100%; height: 100%" id="mapContainer"></div-->
-  <app-here-map [startRideSubject]="startRideSubject" [gotReservedBikeSubject]="gotReservedBikeSubject"></app-here-map>
+  <!--app-here-map [startRideSubject]="startRideSubject" [gotReservedBikeSubject]="gotReservedBikeSubject"></app-here-map-->
+  <div #mapElement style="width: 100%; height: 100%" id="mapContainer" *ngIf="!is3DChecked"></div>
+  <ion-fab class="get-position" vertical="bottom" horizontal="end" (click)="getCurrentPosition()" slot="fixed">
+    <ion-fab-button>
+      <ion-icon name="locate"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
 <ion-footer>
   <div class="bike-details-container">
