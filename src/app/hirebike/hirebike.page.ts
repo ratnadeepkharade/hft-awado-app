@@ -160,7 +160,7 @@ export class HirebikePage implements OnInit {
   }
 
   getReservedBike() {
-    this.loadingService.showLoader();
+    //this.loadingService.showLoader();
     this.storage.get('token').then((token) => {
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       //call reserved bike api
@@ -182,15 +182,15 @@ export class HirebikePage implements OnInit {
 
             //pass reserved bike subject here map
             this.gotReservedBikeSubject.next(resp.data);
-            this.loadingService.hideLoader();
+            //this.loadingService.hideLoader();
           }, (reservedBikeError) => {
             console.log(reservedBikeError);
-            this.loadingService.hideLoader();
+            //this.loadingService.hideLoader();
           });
         }
       }, (bikeDetailsError) => {
         console.log(bikeDetailsError);
-        this.loadingService.hideLoader();
+        //this.loadingService.hideLoader();
       });
     });
   }
@@ -202,12 +202,12 @@ export class HirebikePage implements OnInit {
       let bikeApi = this.httpClient.get(url, { headers });
       bikeApi.subscribe((resp) => {
         console.log('my data: ', resp);
-        this.loadingService.hideLoader();
+        //this.loadingService.hideLoader();
         this.toastService.showToast("Trip Started");
         this.isBikeHired = true;
       }, (error) => {
         console.log(error);
-        this.loadingService.hideLoader();
+        //this.loadingService.hideLoader();
         this.toastService.showToast("This is ongoing Trip");
       });
     });
@@ -220,18 +220,18 @@ export class HirebikePage implements OnInit {
   }
 
   CancelTrip() {
-    this.loadingService.showLoader();
+    //this.loadingService.showLoader();
     this.storage.get('token').then((token) => {
       let url = 'http://193.196.52.237:8081/rent' + '?bikeId=' + this.bikeDetails.id;
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       let bikeApi = this.httpClient.delete(url, { headers });
       bikeApi.subscribe((resp) => {
         console.log('my data: ', resp);
-        this.loadingService.hideLoader();
+        //this.loadingService.hideLoader();
         this.toastService.showToast("Trip Ended!");
       }, (error) => {
         console.log(error);
-        this.loadingService.hideLoader();
+        //this.loadingService.hideLoader();
         this.toastService.showToast("No Ongong Trip to End")
       });
     });

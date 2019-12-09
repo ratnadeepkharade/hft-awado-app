@@ -145,7 +145,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   getBikesList() {
-    this.loadingService.showLoader();
+    //this.loadingService.showLoader();
     this.storage.get('token').then((token) => {
       let url = 'http://193.196.52.237:8081/bikes' + '?lat=' + this.currentUserPosition.lat + '&lng=' + this.currentUserPosition.lng;
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
@@ -158,9 +158,10 @@ export class HomePage implements OnInit, OnDestroy {
           this.reverseGeocode(this.platform, this.bikes[i].lat, this.bikes[i].lon, i);
         }
         this.showBikesOnMap();
-        this.loadingService.hideLoader();
+        //this.loadingService.hideLoader();
       }, (error) => {console.log(error)
-        this.loadingService.hideLoader();});
+        //this.loadingService.hideLoader();
+      });
     });
   }
 
@@ -260,7 +261,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   reserveBike() {
     //this.selectedBike=bikeS;
-    this.loadingService.showLoader();
+    //this.loadingService.showLoader();
     this.storage.get('token').then((token) => {
       let url = 'http://193.196.52.237:8081/reservation' + '?bikeId=' + this.selectedBike.id;
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
@@ -270,10 +271,10 @@ export class HomePage implements OnInit, OnDestroy {
         this.isBikeReserved = true;
         this.toastService.showToast("Reservation Successful!");
         this.router.navigateByUrl('/myreservation');
-        this.loadingService.hideLoader();
+        //this.loadingService.hideLoader();
       }, (error) => {
         console.log(error);
-        this.loadingService.hideLoader();
+        //this.loadingService.hideLoader();
         this.toastService.showToast("Only one bike may be reserved or rented at a time");
       });
     });
