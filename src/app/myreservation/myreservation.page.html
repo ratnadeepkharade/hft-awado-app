@@ -16,7 +16,7 @@
     </ion-card-content>
   </ion-card>
   <div #mapElement style="width: 100%; height: 100%" id="mapContainer" *ngIf="isBikeReserved"></div>
-  <ion-fab class="get-position" vertical="bottom" horizontal="end" (click)="getCurrentPosition()" slot="fixed">
+  <ion-fab *ngIf="isBikeReserved" class="get-position" vertical="bottom" horizontal="end" (click)="getCurrentPosition()" slot="fixed">
     <ion-fab-button>
       <ion-icon name="locate"></ion-icon>
     </ion-fab-button>
