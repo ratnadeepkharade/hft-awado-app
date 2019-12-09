@@ -37,9 +37,15 @@
               },
               {
                 "input": "src/global.scss"
-              }
+              },
+              "src/assets/js/mapsjs-ui.css"
             ],
-            "scripts": []
+            "scripts": [
+              "./src/assets/js/mapsjs-core.js",
+              "./src/assets/js/mapsjs-mapevents.js",
+              "./src/assets/js/mapsjs-service.js",
+              "./src/assets/js/mapsjs-ui.js"
+            ]
           },
           "configurations": {
             "production": {
