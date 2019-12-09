@@ -121,7 +121,7 @@ export class HirebikePage implements OnInit {
     });
   }
 
-  startTrip1() {
+  startTrip() {
     this.storage.get('token').then((token) => {
       let url = 'http://193.196.52.237:8081/rent' + '?bikeId=' + this.bikeDetails.id;
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
@@ -138,7 +138,7 @@ export class HirebikePage implements OnInit {
 
   }
 
-  startTrip() {
+  startTrip1() {
     this.isBikeHired = true;
     this.startRideSubject.next('some value');
   }

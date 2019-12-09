@@ -29,6 +29,10 @@ const routes: Routes = [
   {
     path: 'hirebike',
     loadChildren: () => import('./hirebike/hirebike.module').then( m => m.HirebikePageModule)
+  },
+  {
+    path: 'ridehistory',
+    loadChildren: () => import('./ridehistory/ridehistory.module').then( m => m.RidehistoryPageModule)
   }
 
   
