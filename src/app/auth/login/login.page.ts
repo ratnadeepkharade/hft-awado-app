@@ -42,7 +42,7 @@ export class LoginPage implements OnInit {
       "email": this.username,
       "password": this.password
     });
-    //this.loadingService.showLoader();
+    this.loadingService.showLoader();
     this.loginApi
       .subscribe((data) => {
         //console.log('my data: ', data);
@@ -50,11 +50,11 @@ export class LoginPage implements OnInit {
         this.restService.isLoginPage = false;
         this.userService.setUsername(this.username);
         this.router.navigateByUrl('/home');
-        //this.loadingService.hideLoader();
+        this.loadingService.hideLoader();
       }, (error) => {
         console.log(JSON.stringify(error));
         this.correctCredentials = true;
-        //this.loadingService.hideLoader();
+        this.loadingService.hideLoader();
       });
   }
   register() {
