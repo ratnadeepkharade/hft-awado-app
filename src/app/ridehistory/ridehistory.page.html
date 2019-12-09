@@ -1,0 +1,131 @@
+<ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title slot="start">
+        Ride History
+      </ion-title>
+    
+    </ion-toolbar>
+  </ion-header>
+<ion-content>
+  <div class="ride-list-container" *ngIf="isRideActive">
+      <div class="ride-container" *ngFor="let ride of rides">
+          <div class="inner" (click)="showRideDetails(bike)">
+    <ion-grid>
+      <ion-row  >
+        <ion-col>
+          Bike ID
+
+        </ion-col>
+        <ion-col>
+          {{ride.bikeId}}
+        </ion-col>
+
+      </ion-row>
+      <ion-row>
+          <ion-col>
+           Price
+  
+          </ion-col>
+          <ion-col>
+            {{ride.price}}
+          </ion-col>
+          
+        </ion-row>
+        <ion-row>
+            <ion-col>
+           Distance
+    
+            </ion-col>
+            <ion-col>
+              {{ride.distance}}
+            </ion-col>
+            
+          </ion-row>
+          <ion-row>
+              <ion-col>
+                Start-Date
+      
+              </ion-col>
+              <ion-col>
+                {{ride.startDate}}
+              </ion-col>
+              
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                 End-Date
+        
+                </ion-col>
+                <ion-col>
+                  {{ride.endDate}}
+                </ion-col>
+                
+              </ion-row>
+    </ion-grid>
+    </div>
+  </div>
+  </div>
+  <div class="ride-list-container" *ngIf="!isRideActive">
+      <div class="ride-container" *ngFor="let ride of rides">
+          <div class="inner" (click)="showRideDetails()">
+    <ion-grid>
+      <ion-row  >
+        <ion-col>
+          Bike ID
+
+        </ion-col>
+        <ion-col>
+          {{ride.bikeId}}
+        </ion-col>
+
+      </ion-row>
+      <ion-row>
+          <ion-col>
+           Price
+  
+          </ion-col>
+          <ion-col>
+            {{ride.price}}
+          </ion-col>
+          
+        </ion-row>
+        <ion-row>
+            <ion-col>
+           Distance
+    
+            </ion-col>
+            <ion-col>
+              {{ride.distance}}
+            </ion-col>
+            
+          </ion-row>
+          <ion-row>
+              <ion-col>
+                Start-Date
+      
+              </ion-col>
+              <ion-col>
+                {{ride.startDate}}
+              </ion-col>
+              
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                 End-Date
+        
+                </ion-col>
+                <ion-col>
+                  {{ride.endDate}}
+                </ion-col>
+                
+              </ion-row>
+    </ion-grid>
+    </div>
+  </div>
+
+</div>
+
+</ion-content>

@@ -1,0 +1,28 @@
+.ride-list-container{
+    position: relative;
+  
+    .bike-list-expander{
+      position: absolute;
+      font-size: 32px;
+      color: gray;
+      z-index: 200;
+      left: 46%;
+      top: -32px;
+    }
+  }
+  .ride-container{
+    height: 191px;
+    width: 100%;
+    border: 1px solid #aaaaaa;
+    border-radius: 5px;
+    box-sizing: border-box;
+    float: left;
+      width: 100%;
+      clear: both;
+  
+    div {
+      height: inherit;
+      float: left;
+    }
+  }
+  

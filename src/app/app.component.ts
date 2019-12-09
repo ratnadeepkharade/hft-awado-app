@@ -31,7 +31,7 @@ export class AppComponent {
     },
     {
       title: 'My Rides',
-      url: '/hirebike',
+      url: '/ridehistory',
       icon: 'clipboard'
     },
     {
