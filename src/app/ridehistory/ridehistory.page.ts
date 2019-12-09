@@ -47,7 +47,5 @@ export class RidehistoryPage implements OnInit {
       //alert('Error getting location - ' + JSON.stringify(error));
     });
   }
-  showRideDetails() {
-    //this.router.navigateByUrl('/myreservation');
-  }
+
 }
