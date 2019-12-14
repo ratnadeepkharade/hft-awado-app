@@ -11,30 +11,37 @@
   </ion-header>
 
   <ion-content>
-    <div >
+    <div class="container">
+      <div><img src="../../../assets/images/Questions.png"></div>
       <div class="help-container">
         <ion-grid>
           <ion-row>
             <ion-col>
-              Contact Person:
+              <ion-icon name="contact"></ion-icon>  Contact Person:
             </ion-col>
             <ion-col>
               Priyanaka Upadhye
             </ion-col>
           </ion-row>
           <ion-row>
+
+
+
+          </ion-row>
+          <ion-row>
             <ion-col>
-              Contact Email:
+              <ion-icon name="Mail"></ion-icon> Contact Email:
             </ion-col>
             <ion-col>
-              priya.upadhye@gmail.com
+              Admin@mail.com
             </ion-col>
           </ion-row>
 
           <ion-row>
             <ion-col>
-              Contact Number:
+              <ion-icon name="call"></ion-icon> Contact Number:
             </ion-col>
+
             <ion-col>
               +4917665211145
             </ion-col>
@@ -42,5 +49,10 @@
           </ion-row>
         </ion-grid>
       </div>
+
+    
     </div >
   </ion-content>
+  <ion-footer>
+    <ion-button expand="block" (click)="CallHelpLine()">Help</ion-button>
+</ion-footer>
