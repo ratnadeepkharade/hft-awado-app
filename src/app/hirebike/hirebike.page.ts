@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { MapDataService } from '../services/map-data.service';
 import { LocationService } from '../services/location.service';
 import { LoadingService } from '../services/loading.service';
+import { FeedbackService } from 'src/app/services/feedback.service';
 declare var H: any;
 
 @Component({
@@ -52,6 +53,7 @@ export class HirebikePage implements OnInit {
 
   public rideStarted = false;
 
+
   constructor(private geolocation: Geolocation,
     public restService: RestService,
     public httpClient: HttpClient,
@@ -60,7 +62,8 @@ export class HirebikePage implements OnInit {
     private router: Router,
     private mapDataService: MapDataService,
     public locationService: LocationService,
-    public loadingService: LoadingService) {
+    public loadingService: LoadingService,
+    public feedbackService: FeedbackService) {
       
     this.platform = new H.service.Platform({
       'apikey': 'tiVTgBnPbgV1spie5U2MSy-obhD9r2sGiOCbBzFY2_k'
@@ -197,11 +200,13 @@ export class HirebikePage implements OnInit {
 
   startTrip() {
     this.storage.get('token').then((token) => {
+      const bikeId=this.bikeDetails.id;
       let url = 'http://193.196.52.237:8081/rent' + '?bikeId=' + this.bikeDetails.id;
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       let bikeApi = this.httpClient.get(url, { headers });
       bikeApi.subscribe((resp) => {
         console.log('my data: ', resp);
+        this.feedbackService.setBikeid(this.bikeDetails.id);
         //this.loadingService.hideLoader();
         this.toastService.showToast("Trip Started");
         this.isBikeHired = true;
@@ -229,6 +234,7 @@ export class HirebikePage implements OnInit {
         console.log('my data: ', resp);
         //this.loadingService.hideLoader();
         this.toastService.showToast("Trip Ended!");
+        this.router.navigateByUrl('/feedback');
       }, (error) => {
         console.log(error);
         //this.loadingService.hideLoader();
