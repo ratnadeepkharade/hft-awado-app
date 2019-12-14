@@ -1,0 +1,38 @@
+.help-container{
+    height: 191px;
+    width: 100%;
+    
+    border: 1px solid #aaaaaa;
+    border-radius: 5px;
+    box-sizing: border-box;
+    float: left;
+      width: 100%;
+      height: 20%;
+      clear: both;
+      margin: 0;
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+      
+    div {
+      height: inherit;
+      float: left;
+      
+    }
+    
+}
+.container {
+    height: 100%;
+    position: relative;
+   
+  }
+.center {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+  }
