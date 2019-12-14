@@ -33,6 +33,10 @@ const routes: Routes = [
   {
     path: 'ridehistory',
     loadChildren: () => import('./ridehistory/ridehistory.module').then( m => m.RidehistoryPageModule)
+  },
+  {
+    path: 'help-line',
+    loadChildren: () => import('./help-line/help-line.module').then( m => m.HelpLinePageModule)
   }
 
   

@@ -27,16 +27,21 @@ export class AppComponent {
     {
       title: 'My Reservation',
       url: '/myreservation',
-      icon: 'clipboard'
+      icon: 'cart'
     }, {
       title: 'My Rides',
       url: '/hirebike',
-      icon: 'clipboard'
+      icon: 'bicycle'
     },
     {
       title: 'Ride History',
       url: '/ridehistory',
       icon: 'clipboard'
+    },
+    {
+      title: 'Help',
+      url: '/help-line',
+      icon: 'call'
     },
     {
       title: 'Logout',
