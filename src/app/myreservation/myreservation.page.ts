@@ -131,7 +131,7 @@ export class MyreservationPage implements OnInit {
   }
 
   getReservedBike() {
-    //this.loadingService.showLoader();
+    this.loadingService.showLoader();
     this.storage.get('token').then((token) => {
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       //call reserved bike api
@@ -147,7 +147,7 @@ export class MyreservationPage implements OnInit {
           let bikeDetailsApi = this.httpClient.get(bikeDetailsUrl, { headers });
           bikeDetailsApi.subscribe((resp: any) => {
             console.log('Bike Details', resp);
-            //this.loadingService.hideLoader();
+            this.loadingService.hideLoader();
             this.bikeDetails = resp.data;
             this.reverseGeocode(this.platform, this.bikeDetails.lat, this.bikeDetails.lon);
             this.isBikeReserved = true;
@@ -163,13 +163,16 @@ export class MyreservationPage implements OnInit {
                 console.log(error.message);
               });
           }, (reservedBikeError) => {
-            //this.loadingService.hideLoader();
+            this.loadingService.hideLoader();
             console.log(reservedBikeError);
             this.isBikeReserved = false;
           });
+        } else {
+          this.loadingService.hideLoader();
+          this.isBikeReserved = false;
         }
       }, (bikeDetailsError) => {
-        //this.loadingService.hideLoader();
+        this.loadingService.hideLoader();
         console.log(bikeDetailsError)
         this.isBikeReserved = false;
       });

@@ -35,12 +35,12 @@ const routes: Routes = [
     loadChildren: () => import('./ridehistory/ridehistory.module').then( m => m.RidehistoryPageModule)
   },
   {
-    path: 'feedback',
-    loadChildren: () => import('./feedback/feedback.module').then( m => m.FeedbackPageModule)
+    path: 'help-line',
+    loadChildren: () => import('./help-line/help-line.module').then( m => m.HelpLinePageModule)
   },
   {
-    path: 'feedback',
-    loadChildren: () => import('./feedback/feedback.module').then( m => m.FeedbackPageModule)
+    path: 'reset-password',
+    loadChildren: () => import('./reset-password/reset-password.module').then( m => m.ResetPasswordPageModule)
   }
 
   
