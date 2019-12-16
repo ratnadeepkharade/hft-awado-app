@@ -52,7 +52,8 @@
   --ion-color-danger-tint: #f25454;
 
   /** dark **/
-  --ion-color-dark: #222428;
+  //--ion-color-dark: #222428;
+  --ion-color-dark: #364f6b;
   --ion-color-dark-rgb: 34, 34, 34;
   --ion-color-dark-contrast: #ffffff;
   --ion-color-dark-contrast-rgb: 255, 255, 255;
@@ -74,4 +75,24 @@
   --ion-color-light-contrast-rgb: 0, 0, 0;
   --ion-color-light-shade: #d7d8da;
   --ion-color-light-tint: #f5f6f9;
+  
+}
+
+/** Awado Specific colors **/
+:root {
+  --ion-color-awPrimary: #364f6b;
+  --ion-color-awPrimary-rgb: 54,79,107;
+  --ion-color-awPrimary-contrast: #ffffff;
+  --ion-color-awPrimary-contrast-rgb: 255,255,255;
+  --ion-color-awPrimary-shade: #30465e;
+  --ion-color-awPrimary-tint: #4a617a;
+}
+
+.ion-color-awPrimary {
+  --ion-color-base: var(--ion-color-awPrimary);
+  --ion-color-base-rgb: var(--ion-color-awPrimary-rgb);
+  --ion-color-contrast: var(--ion-color-awPrimary-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-awPrimary-contrast-rgb);
+  --ion-color-shade: var(--ion-color-awPrimary-shade);
+  --ion-color-tint: var(--ion-color-awPrimary-tint);
 }
