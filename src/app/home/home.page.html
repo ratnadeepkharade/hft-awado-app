@@ -22,42 +22,51 @@
 </ion-content>
 
 <ion-footer>
-
-  <div class="bike-list-container" *ngIf="!isDetailsVisible">
-
-    <div class="bike-container" *ngFor="let bike of bikes">
-      <div class="inner" (click)="showBikeDetails(bike)">
-        <div class="bike-name">
-          {{bike.name}}
-        </div>
-        <div class="battery-info">
-          <div>
-            <ion-icon class="battery-icon" name="battery-charging"></ion-icon>
+  <div class="bike-list-wrapper" *ngIf="!isDetailsVisible">
+    <div class="nearby-bikes">Nearby Bikes</div>
+    <div class="bike-list-container">
+      <div class="bike-container" *ngFor="let bike of bikes">
+        <div class="inner" (click)="showBikeDetails(bike)">
+          <div class="bike-icon">
+            <ion-icon name="bicycle"></ion-icon>
           </div>
-          <div>{{bike.batteryPercentage + " %"}}</div>
-        </div>
-        <div class="address-info">
-          <div class="disance">{{bike.distance + " km"}}</div>
-          <div class="address">{{bike.address+" "+bike.HouseNumber+ ", " +bike.PostalCode}}</div>
-
+          <ion-grid class="distance-data">
+            <ion-row>
+              <ion-col size="1"><ion-icon name="walk"></ion-icon></ion-col>
+              <ion-col>{{bike.distance + " km"}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="1"><ion-icon name="pin"></ion-icon></ion-col>
+              <ion-col>{{bike.address + " " + (bike.HouseNumber || "")}}</ion-col>
+            </ion-row>
+          </ion-grid>
+          <div class="battery-info1">
+              <div><ion-icon name="battery-full"></ion-icon></div>
+              <div class="battery-level">{{bike.batteryPercentage}}%</div>
+          </div>
         </div>
       </div>
+      <!-- <div class="bike-container" *ngFor="let bike of bikes">
+        <div class="inner" (click)="showBikeDetails(bike)">
+          <div class="bike-name">
+            {{bike.name}}
+          </div>
+          <div class="battery-info">
+            <div>
+              <ion-icon class="battery-icon" name="battery-charging"></ion-icon>
+            </div>
+            <div>{{bike.batteryPercentage + " %"}}</div>
+          </div>
+          <div class="address-info">
+            <div class="disance">{{bike.distance + " km"}}</div>
+            <div class="address">{{bike.address+" "+bike.HouseNumber+ ", " +bike.PostalCode}}</div>
+          </div>
+        </div>
+      </div> -->
     </div>
   </div>
-
   <div class="bike-details-container" *ngIf="isDetailsVisible">
     <div class="inner">
-
-      <!--  <div class="battery-info">
-        <div>
-          <ion-icon class="battery-icon" name="battery-charging"></ion-icon>
-        </div>
-        <div>{{selectedBike.batteryPercentage + " %"}}</div>
-      </div>
-      <div class="address-info">
-        <div class="disance">{{selectedBike.distance + "m"}}</div>
-        <div class="address">{{selectedBike.address}}</div>
-      </div> -->
       <div class="button-container">
         <ion-grid>
           <ion-row>
@@ -73,7 +82,6 @@
               Battery Level
             </ion-col>
             <ion-col>
-
               <ion-icon class="battery-icon" name="battery-charging"></ion-icon>
               {{selectedBike.batteryPercentage + " %"}}
             </ion-col>
@@ -102,11 +110,8 @@
               <ion-button size="medium" expand="block" (click)="navigatetoBike()">Navigate</ion-button>
             </ion-col>
           </ion-row>
-         
         </ion-grid>
-
       </div>
     </div>
-
   </div>
 </ion-footer>
