@@ -15,7 +15,7 @@ import { FeedbackService } from 'src/app/services/feedback.service';
 export class FeedbackPage implements OnInit {
   feedbackApi:  Observable<any>;
   content: "";
-  bikeId=this.feedbackService.getBikeid();
+  bikeId="";
 
   constructor(private router: Router,
     public httpClient: HttpClient,
@@ -31,7 +31,7 @@ export class FeedbackPage implements OnInit {
       let url = 'http://193.196.52.237:8081/feedbacks'
       
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
-      this.feedbackApi = this.httpClient.post<any>(url, {"content": this.content,"bikeId":this.bikeId},{headers});
+      this.feedbackApi = this.httpClient.post<any>(url, {"content": this.content,"bikeId":this.feedbackService.getBikeid()},{headers});
       this.feedbackApi.subscribe((resp) => {
         console.log("rides response", resp);
         

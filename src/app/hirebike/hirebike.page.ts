@@ -11,6 +11,7 @@ import { MapDataService } from '../services/map-data.service';
 import { LocationService } from '../services/location.service';
 import { LoadingService } from '../services/loading.service';
 import { FeedbackService } from 'src/app/services/feedback.service';
+import { AlertController } from '@ionic/angular';
 declare var H: any;
 
 @Component({
@@ -66,7 +67,8 @@ export class HirebikePage implements OnInit {
     private mapDataService: MapDataService,
     public locationService: LocationService,
     public loadingService: LoadingService,
-    public feedbackService: FeedbackService) {
+    public feedbackService: FeedbackService,
+    public alertController: AlertController) {
 
     this.platform = new H.service.Platform({
       'apikey': 'tiVTgBnPbgV1spie5U2MSy-obhD9r2sGiOCbBzFY2_k'
@@ -345,7 +347,7 @@ export class HirebikePage implements OnInit {
       let bikeApi = this.httpClient.get(url, { headers });
       bikeApi.subscribe((resp) => {
         console.log('my data: ', resp);
-        this.feedbackService.setBikeid(this.bikeDetails.id);
+        
         this.loadingService.hideLoader();
         this.toastService.showToast("Trip Started");
         this.isBikeHired = true;
@@ -366,6 +368,7 @@ export class HirebikePage implements OnInit {
     this.loadingService.showLoader();
     this.storage.get('token').then((token) => {
       let url = 'http://193.196.52.237:8081/rent' + '?bikeId=' + this.bikeDetails.id;
+      this.feedbackService.setBikeid(this.bikeDetails.id);
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       let bikeApi = this.httpClient.get(url, { headers });
       bikeApi.subscribe((resp) => {
@@ -395,11 +398,34 @@ export class HirebikePage implements OnInit {
       let url = 'http://193.196.52.237:8081/rent' + '?bikeId=' + this.bikeDetails.id;
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       let bikeApi = this.httpClient.delete(url, { headers });
-      bikeApi.subscribe((resp) => {
+      bikeApi.subscribe(async (resp) => {
         console.log('my data: ', resp);
         this.loadingService.hideLoader();
         this.toastService.showToast("Trip Ended!");
-        this.router.navigateByUrl('/feedback');
+        //this.router.navigateByUrl('/feedback');
+        const alert = await this.alertController.create({
+          header: 'Feedback!',
+          message: '<strong>Do you want to review your Ride</strong>?',
+          buttons: [
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              cssClass: 'secondary',
+              handler: (blah) => {
+                console.log('Confirm Cancel: blah');
+                this.router.navigateByUrl('/home');
+              }
+            }, {
+              text: 'Okay',
+              handler: () => {
+                console.log('Confirm Okay');
+                this.router.navigateByUrl('/feedback');
+              }
+            }
+          ]
+        });
+    
+        await alert.present();
       }, (error) => {
         console.log(error);
         this.loadingService.hideLoader();
