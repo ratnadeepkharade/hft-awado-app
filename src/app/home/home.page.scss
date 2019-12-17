@@ -4,8 +4,66 @@
 }
 
 ion-footer{
-  overflow-y: auto;
-  padding-top: 30px;
+  max-height: 50%;
+  .bike-list-container{
+    overflow-y: auto;
+  }
+  
+  .nearby-bikes{
+    padding: 8px;
+    font-weight: 500;
+    border-bottom: 1px solid #ddd;
+    background-color: #34a080;
+    text-align: center;
+    color: #fff;
+  }
+
+  .bike-list-container{
+    padding: 8px;
+
+    .bike-container{
+      margin-bottom: 10px;
+      box-shadow: 0px 0px 3px 0px rgba(15, 22, 33, 0.3);
+      background-color: #f5f5f5;
+
+      .inner {
+        width: inherit;
+        position: relative;
+
+        .distance-data{
+          padding-right: 70px;
+          padding-left: 60px;
+          font-size: 14px;
+
+          ion-icon{
+            font-size: 18px;
+          }
+        }
+
+        .bike-icon{
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          width: 60px;
+          line-height: 78px;
+          font-size: 48px;
+          text-align: center;
+        }
+
+        .battery-info1{
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          line-height: 70px;
+          text-align: center;
+          width: 70px;
+          font-size: 20px;
+        }
+      }
+    }
+  }
 }
 
 .bike-list-container{
@@ -22,9 +80,8 @@ ion-footer{
 }
 
 .bike-container{
-  height: 60px;
+  height: 70px;
   width: 100%;
-  border: 1px solid #aaaaaa;
   border-radius: 5px;
   box-sizing: border-box;
   float: left;
