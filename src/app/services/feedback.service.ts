@@ -5,6 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class FeedbackService {
   feedbackBikeDetails = {name : "",bikeid:""}
+  
   constructor() { }
 public getBikeid(){
   return this.feedbackBikeDetails.bikeid

@@ -66,16 +66,22 @@
     </div>
   </div>
   <div class="bike-details-container" *ngIf="isDetailsVisible">
+    <ion-icon class="close-circle-cancel" name="close-circle" (click)="navigatetoBikeList()"></ion-icon>
     <div class="inner">
+      
       <div class="button-container">
+        
         <ion-grid>
+          
           <ion-row>
+            
             <ion-col>
               Bike Name
             </ion-col>
             <ion-col>
               {{selectedBike.name}}
             </ion-col>
+         
           </ion-row>
           <ion-row>
             <ion-col>
