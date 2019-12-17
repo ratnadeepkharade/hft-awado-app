@@ -5,7 +5,28 @@
 }
 
 .waypoint-wrapper{
-    font-weight: 700;
+  padding: 8px;
+  font-weight: 500;
+  border-bottom: 1px solid #ddd;
+  background-color: #34a080;
+  text-align: center;
+  color: #fff;
+}
+
+.routes-list-wrapper{
+  font-size: 14px;
+  color: #444444;
+
+  .route-option-wrapper{
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+
+    .route-heading{
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+  }
 }
 
 .directions li span.arrow {

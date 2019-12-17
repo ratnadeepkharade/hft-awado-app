@@ -26,7 +26,8 @@
     </ion-card-content>
   </ion-card>
   <div #mapElement style="width: 100%; height: 100%" id="mapContainer" *ngIf="isBikeReserved"></div>
-  <ion-fab *ngIf="isBikeReserved" class="get-position" vertical="bottom" horizontal="end" (click)="getCurrentPosition()" slot="fixed">
+  <ion-fab *ngIf="isBikeReserved" class="get-position" vertical="bottom" horizontal="end" (click)="getCurrentPosition()"
+    slot="fixed">
     <ion-fab-button>
       <ion-icon name="locate"></ion-icon>
     </ion-fab-button>
@@ -35,12 +36,11 @@
 <ion-footer>
   <div class="bike-details-container" *ngIf="isBikeReserved">
     <div class="inner">
-      <div class="button-container">
-
+      <div class="button-container" *ngIf="isTripStarted">
         <ion-grid *ngIf="isBikeHired" class="directions">
-          <ion-item class="waypoint-wrapper">
+          <div class="waypoint-wrapper">
             <span [innerHTML]="wayPointsInfo"></span>
-          </ion-item>
+          </div>
           <ion-list class="my-ion-list">
             <ion-item *ngFor="let maneuver of maneuverList">
               <li><span [className]="'arrow '+ maneuver.action"></span><span [innerHTML]="maneuver.instruction"></span>
@@ -62,18 +62,33 @@
           </ion-row>
         </ion-grid>
         <ion-grid>
-          <ion-row *ngIf="!isBikeHired">
-            <ion-col>
-              <ion-button size="medium" expand="block" (click)="startTrip()">Start Trip</ion-button>
-            </ion-col>
-          </ion-row>
-
-          <ion-row *ngIf="isBikeHired">
+          <ion-row>
             <ion-col>
               <ion-button size="medium" expand="block" (click)="CancelTrip()">End Trip</ion-button>
             </ion-col>
           </ion-row>
         </ion-grid>
+      </div>
+      <div id="route-selection-container" *ngIf="!isTripStarted">
+        <div class="route-selection-header" *ngIf="gotRouteOptions">
+          <div class="waypoint-wrapper">
+            <div [innerHTML]="wayPointsInfo"></div>
+            <div> Select Route:</div>
+          </div>
+        </div>
+        <div class="routes-list-wrapper">
+          <div class="routes-list-inner">
+            <div class="route-option-wrapper" *ngFor="let route of routeList | keyvalue; let i = index">
+              <div class="route-option-inner" (click)="selectRoute(route.value.route, i)">
+                <div class="route-heading">{{getRouteType(route.value.mode)}}:</div>
+                <div class="route-summary">{{route.value.summary}}</div>
+                <div class="route-prediction"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ion-button *ngIf="!isRouteSelected && !gotRouteOptions" [disabled]="!isDestinationSelected" size="medium" expand="block" (click)="getRouteOptions()">Get Routes</ion-button>
+        <ion-button *ngIf="isRouteSelected" size="medium" expand="block" (click)="startTrip2()">Start Trip</ion-button>
       </div>
     </div>
   </div>
