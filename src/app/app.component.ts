@@ -38,11 +38,7 @@ export class AppComponent {
       url: '/ridehistory',
       icon: 'clipboard'
     },
-    {
-      title: 'Feedback',
-      url: '/feedback',
-      icon: 'clipboard'
-    },
+  
     {
       title: 'Help',
       url: '/help-line',
