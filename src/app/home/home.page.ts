@@ -51,6 +51,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    
   }
 
   ngAfterViewInit() {
@@ -224,6 +225,10 @@ export class HomePage implements OnInit, OnDestroy {
     //this.map.addObject(marker);
 
     this.locationsGroup.addObjects([marker]);
+  }
+  navigatetoBikeList() {
+    this.isDetailsVisible = false;
+    this.ionViewWillEnter();
   }
 
   enable3DMaps() {
