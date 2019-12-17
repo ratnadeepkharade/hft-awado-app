@@ -22,7 +22,8 @@ const routes: Routes = [
   {
     path: 'register',
     loadChildren: () => import('./auth/register/register.module').then( m => m.RegisterPageModule)
-  },  {
+  },
+  {
     path: 'myreservation',
     loadChildren: () => import('./myreservation/myreservation.module').then( m => m.MyreservationPageModule)
   },
@@ -34,6 +35,10 @@ const routes: Routes = [
     path: 'ridehistory',
     loadChildren: () => import('./ridehistory/ridehistory.module').then( m => m.RidehistoryPageModule)
   },
+  {
+  path: 'feedback',
+  loadChildren: () => import('./feedback/feedback.module').then( m => m.FeedbackPageModule)
+},
   {
     path: 'help-line',
     loadChildren: () => import('./help-line/help-line.module').then( m => m.HelpLinePageModule)

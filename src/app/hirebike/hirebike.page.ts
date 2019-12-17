@@ -345,6 +345,7 @@ export class HirebikePage implements OnInit {
       let bikeApi = this.httpClient.get(url, { headers });
       bikeApi.subscribe((resp) => {
         console.log('my data: ', resp);
+        this.feedbackService.setBikeid(this.bikeDetails.id);
         this.loadingService.hideLoader();
         this.toastService.showToast("Trip Started");
         this.isBikeHired = true;

@@ -39,6 +39,11 @@ export class AppComponent {
       icon: 'clipboard'
     },
     {
+      title: 'Feedback',
+      url: '/feedback',
+      icon: 'clipboard'
+    },
+    {
       title: 'Help',
       url: '/help-line',
       icon: 'call'

@@ -1,6 +1,6 @@
 .ride-list-container{
     position: relative;
-  
+    overflow-y: scroll;
     .bike-list-expander{
       position: absolute;
       font-size: 32px;
