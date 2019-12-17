@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RestService } from 'src/app/rest.service';
 import { ToastService } from '../../services/toast.service';
 import { Router } from '@angular/router';
@@ -16,11 +16,8 @@ export class RegisterPage implements OnInit {
   registerApi: Observable<any>;
  
   correctCredentials: boolean;
-  email: "";
-  password: "";
-  lastName: "";
-  firstName: "";
-  
+
+
   constructor(private router: Router, 
     public httpClient: HttpClient, 
     public restService: RestService,
@@ -34,10 +31,11 @@ export class RegisterPage implements OnInit {
   }
   createForm() {
     this.angForm = this.fb.group({
-       firstName: ['',[ Validators.required ]],
-       lastName: ['', [Validators.required ]],
-       email: ['',[ Validators.required, Validators.email]],
-       password: ['', [Validators.required,Validators.minLength(4) ]],
+       
+       email: ['',[ Validators.required, Validators.email,Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/)]],
+       password: ['', [Validators.required ]],
+       firstname: ['',[ Validators.required ]],
+       lastname: ['', [Validators.required ]],
        
  
    
@@ -48,13 +46,9 @@ export class RegisterPage implements OnInit {
     if (this.angForm.invalid) {
       return;
   }
-
-    this.registerApi = this.httpClient.post('http://193.196.52.237:8081/register', {
-      "email": this.email,
-      "password": this.password,
-      "firstname": this.firstName,
-      "lastname": this.lastName
-    });
+  let Form = JSON.stringify(this.angForm.value);
+  const headers = new HttpHeaders().set("Content-Type", 'application/json');
+    this.registerApi = this.httpClient.post('http://193.196.52.237:8081/register', Form,{headers});
     this.registerApi
       .subscribe((data) => {
         console.log('my data: ', data);
@@ -67,5 +61,8 @@ export class RegisterPage implements OnInit {
         this.toastService.showToast("Registration failed!")
         
       });
+  }
+  login(){
+    this.router.navigateByUrl('/login');
   }
 }
