@@ -7,3 +7,10 @@
 * Clone this repository: `git clone https://gitlab.rz.hft-stuttgart.de/92khra1mst/hft_awado_app.git`.
 * Run `npm install` from the project root.
 * Run `ionic serve` in a terminal from the project root.
+
+## Deploying
+
+### Android
+
+1. Run `ionic cordova run android --prod`
+
