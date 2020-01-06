@@ -71,12 +71,13 @@
       </div>
       <div id="route-selection-container" *ngIf="!isTripStarted">
         <div class="route-selection-header" *ngIf="gotRouteOptions">
-          <div class="waypoint-wrapper">
+          <div class="waypoint-wrapper" style="position: relative;">
             <div [innerHTML]="wayPointsInfo"></div>
             <div> Select Route:</div>
+            <ion-icon name="close" (click)="closeRouteOptionsPanel()" style="position: absolute;top: 11px;right: 10px;font-size: 24px;"></ion-icon>
           </div>
         </div>
-        <div class="routes-list-wrapper">
+        <div class="routes-list-wrapper" *ngIf="gotRouteOptions">
           <div class="routes-list-inner" style="padding: 8px; padding-bottom: 0;">
             <div class="route-option-wrapper" style="margin-bottom: 10px;
             box-shadow: 0px 0px 3px 0px rgba(15, 22, 33, 0.3);

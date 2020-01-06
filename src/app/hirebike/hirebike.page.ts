@@ -269,6 +269,7 @@ export class HirebikePage implements OnInit {
     // }
   }
 
+  noGoAreas:any = {};
   displayNoGoAreas(resp) {
     let routes = resp.data.routes;
     let allNoGoAreas = [];
@@ -281,12 +282,12 @@ export class HirebikePage implements OnInit {
     //finalNoGoAreas = [...new Set(allNoGoAreas)];
     let x = (allNoGoAreas) => allNoGoAreas.filter((v,i) => allNoGoAreas.indexOf(v) === i)
     finalNoGoAreas = x(allNoGoAreas);
-    //let group = new H.map.Group();
+    this.noGoAreas = new H.map.Group();
     //this.addRectangleToMap();
     for (let i = 0; i < finalNoGoAreas.length; i++){
       let coords = finalNoGoAreas[i].split(" ");
       let boundingBox = new H.geo.Rect(Number(coords[0]).toPrecision(15), Number(coords[1]).toPrecision(15), Number(coords[2]).toPrecision(15), Number(coords[3]).toPrecision(15));
-      this.map.addObject(
+      this.noGoAreas.addObject(
         new H.map.Rect(boundingBox, {
           style: {
             fillColor: 'rgba(255, 0, 0, 0.5)',
@@ -296,6 +297,8 @@ export class HirebikePage implements OnInit {
         })
       );
     }
+    //this.map.addObject();
+    this.map.addObject(this.noGoAreas);
   }
 
   /**
@@ -320,8 +323,10 @@ export class HirebikePage implements OnInit {
       let route = routeResp.response.route[0];
       //console.log(route);
       this.setRouteOptions(route, i, resp.data.routes[i].mode, selectedRouteIndex, resp.data.routes[i].prediction);
+      let grayscale = 100 + (i * 20);
+      let routeColor = 'rgba(' + [grayscale, grayscale, grayscale].join(',') +', 0.9)';
       if (i !== selectedRouteIndex) {
-        this.drawRouteLine(route, i);
+        this.drawRouteLine(route, i, routeColor);
       }
     }
     let routeResp = JSON.parse(resp.data.routes[selectedRouteIndex].route);
@@ -417,6 +422,19 @@ export class HirebikePage implements OnInit {
     } else {
       return "Safe and Green Route";
     }
+  }
+
+  closeRouteOptionsPanel(){
+    this.removeRouteLines();
+    this.removeNoGoAreas();
+    this.isRouteSelected = false;
+    this.selectedRoute = {};
+    this.routeLines = {};
+    this.gotRouteOptions = false;
+  }
+
+  removeNoGoAreas(){
+    this.map.removeObject(this.noGoAreas);
   }
 
   startTrip() {
