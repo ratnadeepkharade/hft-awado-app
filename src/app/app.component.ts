@@ -49,6 +49,11 @@ export class AppComponent {
       icon: 'call'
     },
     {
+      title: 'Settings',
+      url: '/settings',
+      icon: 'settings'
+    },
+    {
       title: 'Logout',
       url: '/login',
       icon: 'exit'
