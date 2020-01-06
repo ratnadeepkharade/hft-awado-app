@@ -217,10 +217,10 @@ export class HirebikePage implements OnInit {
     var waypoint1 = this.destinationPosition.lat + ',' + this.destinationPosition.lng;
     this.loadingService.showLoader();
     this.storage.get('token').then((token) => {
-      let url = 'http://193.196.52.237:8081/routing?startlng='+ this.bikePosition.lng + '&startlat=' + this.bikePosition.lat + '&destinationlng='+ this.destinationPosition.lng + '&destinationlat=' + this.destinationPosition.lat;
+      let url = 'http://193.196.52.237:8081/routing?startlng=' + this.bikePosition.lng + '&startlat=' + this.bikePosition.lat + '&destinationlng=' + this.destinationPosition.lng + '&destinationlat=' + this.destinationPosition.lat;
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       let bikeApi = this.httpClient.get(url, { headers });
-      bikeApi.subscribe((resp:any) => {
+      bikeApi.subscribe((resp: any) => {
         console.log('my data: ', resp);
         this.loadingService.hideLoader();
         this.isBikeHired = true;
@@ -232,12 +232,12 @@ export class HirebikePage implements OnInit {
         let firstRoute = firstRouteResp.response.route[0];
         this.selectedRoute = firstRoute;
         this.gotRouteOptions = true;
+        this.displayNoGoAreas(resp);
       }, (error) => {
         console.log(error);
         this.loadingService.hideLoader();
       });
     });
-
     // let resp = {
     //   "data": {
     //     "routes": [
@@ -269,13 +269,56 @@ export class HirebikePage implements OnInit {
     // }
   }
 
-  displayRouteOptions(resp, selectedRouteIndex){
-    for (let i = resp.data.routes.length - 1; i >= 0 ; i--) {
+  displayNoGoAreas(resp) {
+    let routes = resp.data.routes;
+    let allNoGoAreas = [];
+    let finalNoGoAreas = [];
+    for (let i = 0; i < routes.length; i++) {
+      for (let j = 0; j < routes[i].actualNoGoAreas.length; j++){
+        allNoGoAreas.push(routes[i].actualNoGoAreas[j]);
+      }
+    }
+    finalNoGoAreas = [...new Set(allNoGoAreas)];
+    //let group = new H.map.Group();
+    //this.addRectangleToMap();
+    for (let i = 0; i < finalNoGoAreas.length; i++){
+      let coords = finalNoGoAreas[i].split(" ");
+      let boundingBox = new H.geo.Rect(Number(coords[0]).toPrecision(15), Number(coords[1]).toPrecision(15), Number(coords[2]).toPrecision(15), Number(coords[3]).toPrecision(15));
+      this.map.addObject(
+        new H.map.Rect(boundingBox, {
+          style: {
+            fillColor: 'rgba(255, 0, 0, 0.5)',
+            strokeColor: 'rgba(0, 0, 0, 0.7)',
+            lineWidth: 2
+          },
+        })
+      );
+    }
+  }
+
+  /**
+ * Adds a rectangle to the map
+ */
+  addRectangleToMap() {
+    var boundingBox = new H.geo.Rect(53.1, 13.1, 43.1, 40.1);
+    this.map.addObject(
+      new H.map.Rect(boundingBox, {
+        style: {
+          fillColor: 'rgba(255, 0, 0, 0.2)',
+          strokeColor: 'rgba(255, 255, 255, 0.5)',
+          lineWidth: 1
+        },
+      })
+    );
+  }
+
+  displayRouteOptions(resp, selectedRouteIndex) {
+    for (let i = resp.data.routes.length - 1; i >= 0; i--) {
       let routeResp = JSON.parse(resp.data.routes[i].route);
       let route = routeResp.response.route[0];
       //console.log(route);
       this.setRouteOptions(route, i, resp.data.routes[i].mode, selectedRouteIndex);
-      if(i !== selectedRouteIndex) {
+      if (i !== selectedRouteIndex) {
         this.drawRouteLine(route, i);
       }
     }
@@ -284,7 +327,7 @@ export class HirebikePage implements OnInit {
     this.drawRouteLine(route, selectedRouteIndex, 'rgba(102, 157, 246, 0.9)');
   }
 
-  displayRouteSummaryAtTop(resp){
+  displayRouteSummaryAtTop(resp) {
     let firstRoute = JSON.parse(resp.data.routes[0].route).response.route[0];
     console.log(firstRoute);
     let waypointLabels = [];
@@ -302,10 +345,10 @@ export class HirebikePage implements OnInit {
     content += 'Total distance: ' + route.summary.distance + 'm. ';
     content += 'Travel Time: ' + Math.floor(route.summary.travelTime / 60) + ' min';
     console.log(content);
-    if(index === selectedRouteIndex) {
+    if (index === selectedRouteIndex) {
       selected = true;
     }
-    this.routeList[index] = {route:route, summary:content, mode:mode, selected: selected};
+    this.routeList[index] = { route: route, summary: content, mode: mode, selected: selected };
   }
 
   isRouteSelected = false;
@@ -356,18 +399,18 @@ export class HirebikePage implements OnInit {
     this.map.addObject(polyline);
   }
 
-  removeRouteLines(){
-    for(let key in this.routeLines) {
+  removeRouteLines() {
+    for (let key in this.routeLines) {
       this.map.removeObject(this.routeLines[key]);
     }
   }
 
-  getRouteType(mode){
+  getRouteType(mode) {
     if (mode === "NORMAL") {
       return "Fastest Route";
-    } else if(mode === "ACCIDENTS") {
+    } else if (mode === "ACCIDENTS") {
       return "Safe Route";
-    } else if(mode === "AIR_POLLUTION") {
+    } else if (mode === "AIR_POLLUTION") {
       return "Green Route";
     } else {
       return "Safe and Green Route";
@@ -379,13 +422,13 @@ export class HirebikePage implements OnInit {
     this.startRideSubject.next('some value');
     this.loadingService.showLoader();
     this.storage.get('token').then((token) => {
-      const bikeId=this.bikeDetails.id;
+      const bikeId = this.bikeDetails.id;
       let url = 'http://193.196.52.237:8081/rent' + '?bikeId=' + this.bikeDetails.id;
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       let bikeApi = this.httpClient.get(url, { headers });
       bikeApi.subscribe((resp) => {
         console.log('my data: ', resp);
-        
+
         this.loadingService.hideLoader();
         this.toastService.showToast("Trip Started");
         this.isBikeHired = true;
@@ -462,7 +505,7 @@ export class HirebikePage implements OnInit {
             }
           ]
         });
-    
+
         await alert.present();
       }, (error) => {
         console.log(error);
@@ -781,8 +824,8 @@ export class HirebikePage implements OnInit {
     });
   }
 
-  ionViewDidLeave(){
-    if(this.mapElement) {
+  ionViewDidLeave() {
+    if (this.mapElement) {
       this.mapElement.nativeElement.remove();
     }
     // if(this.locationService.liveLocationSubject) {
