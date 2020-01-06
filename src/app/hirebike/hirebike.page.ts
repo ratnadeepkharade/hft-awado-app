@@ -210,6 +210,7 @@ export class HirebikePage implements OnInit {
   }
 
   gotRouteOptions = false;
+  routesResponse = {};
 
   getRouteOptions() {
     var waypoint0 = this.bikePosition.lat + ',' + this.bikePosition.lng;
@@ -219,11 +220,17 @@ export class HirebikePage implements OnInit {
       let url = 'http://193.196.52.237:8081/routing?startlng='+ this.bikePosition.lng + '&startlat=' + this.bikePosition.lat + '&destinationlng='+ this.destinationPosition.lng + '&destinationlat=' + this.destinationPosition.lat;
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       let bikeApi = this.httpClient.get(url, { headers });
-      bikeApi.subscribe((resp) => {
+      bikeApi.subscribe((resp:any) => {
         console.log('my data: ', resp);
         this.loadingService.hideLoader();
         this.isBikeHired = true;
-        this.displayRouteOptions(resp);
+        this.routesResponse = resp;
+        this.displayRouteOptions(resp, 0);
+        this.displayRouteSummaryAtTop(resp);
+        this.isRouteSelected = true;
+        let firstRouteResp = JSON.parse(resp.data.routes[0].route);
+        let firstRoute = firstRouteResp.response.route[0];
+        this.selectedRoute = firstRoute;
         this.gotRouteOptions = true;
       }, (error) => {
         console.log(error);
@@ -262,15 +269,22 @@ export class HirebikePage implements OnInit {
     // }
   }
 
-  displayRouteOptions(resp){
-    for (let i = 0; i < resp.data.routes.length; i++) {
+  displayRouteOptions(resp, selectedRouteIndex){
+    for (let i = resp.data.routes.length - 1; i >= 0 ; i--) {
       let routeResp = JSON.parse(resp.data.routes[i].route);
       let route = routeResp.response.route[0];
       //console.log(route);
-      this.setRouteOptions(route, i, resp.data.routes[i].mode);
-      this.drawRouteLine(route, i);
+      this.setRouteOptions(route, i, resp.data.routes[i].mode, selectedRouteIndex);
+      if(i !== selectedRouteIndex) {
+        this.drawRouteLine(route, i);
+      }
     }
+    let routeResp = JSON.parse(resp.data.routes[selectedRouteIndex].route);
+    let route = routeResp.response.route[0];
+    this.drawRouteLine(route, selectedRouteIndex, 'rgba(102, 157, 246, 0.9)');
+  }
 
+  displayRouteSummaryAtTop(resp){
     let firstRoute = JSON.parse(resp.data.routes[0].route).response.route[0];
     console.log(firstRoute);
     let waypointLabels = [];
@@ -282,12 +296,16 @@ export class HirebikePage implements OnInit {
 
   routeList = {};
 
-  setRouteOptions(route, index, mode) {
+  setRouteOptions(route, index, mode, selectedRouteIndex) {
     let content = '';
+    let selected = false;
     content += 'Total distance: ' + route.summary.distance + 'm. ';
     content += 'Travel Time: ' + Math.floor(route.summary.travelTime / 60) + ' min';
     console.log(content);
-    this.routeList[index] = {route:route, summary:content, mode:mode};
+    if(index === selectedRouteIndex) {
+      selected = true;
+    }
+    this.routeList[index] = {route:route, summary:content, mode:mode, selected: selected};
   }
 
   isRouteSelected = false;
@@ -295,10 +313,24 @@ export class HirebikePage implements OnInit {
 
   selectRoute(route, index) {
     let routeLine = this.routeLines[index];
-    this.map.removeObject(routeLine);
-    this.drawRouteLine(route, index, 'rgba(102, 157, 246, 0.9)');
+    //this.map.removeObject(routeLine);
+    this.removeRouteLines();
+    // for(let i=0; i<this.routesResponseArr.length; i++) {
+    //   if(index !== i) {
+    //     let routeResp = JSON.parse(this.routesResponseArr[i].route);
+    //     let route = routeResp.response.route[0];
+    //     this.drawRouteLine(route, index);
+    //   }
+    // }
+    // if(this.oldIndex) {
+    //   this.map.removeObject(this.routeLines[this.oldIndex]);
+    //   this.map.removeObject(this.routeLines[index]);
+    // }
+    //this.drawRouteLine(route, index, 'rgba(102, 157, 246, 0.9)');
     this.isRouteSelected = true;
     this.selectedRoute = route;
+    this.routeLines = {};
+    this.displayRouteOptions(this.routesResponse, index)
   }
 
   routeLines = {};
@@ -322,6 +354,12 @@ export class HirebikePage implements OnInit {
     this.routeLines[index] = polyline;
     // Add the polyline to the map
     this.map.addObject(polyline);
+  }
+
+  removeRouteLines(){
+    for(let key in this.routeLines) {
+      this.map.removeObject(this.routeLines[key]);
+    }
   }
 
   getRouteType(mode){
@@ -741,5 +779,14 @@ export class HirebikePage implements OnInit {
     }, (error) => {
       alert(error);
     });
+  }
+
+  ionViewDidLeave(){
+    if(this.mapElement) {
+      this.mapElement.nativeElement.remove();
+    }
+    // if(this.locationService.liveLocationSubject) {
+    //   this.locationService.liveLocationSubject.unsubscribe();
+    // }
   }
 }
