@@ -346,4 +346,13 @@ export class MyreservationPage implements OnInit {
     else
       this.router.navigateByUrl('/hirebike');
   }
+
+  ionViewDidLeave(){
+    if(this.mapElement) {
+      this.mapElement.nativeElement.remove();
+    }
+    // if(this.locationService.liveLocationSubject) {
+    //   this.locationService.liveLocationSubject.unsubscribe();
+    // }
+  }
 }
