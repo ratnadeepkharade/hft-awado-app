@@ -5,12 +5,22 @@
 }
 
 .waypoint-wrapper{
+  // padding: 8px;
+  // font-weight: 500;
+  // border-bottom: 1px solid #ddd;
+  // background-color: #34a080;
+  // text-align: center;
+  // color: #fff;
   padding: 8px;
+  padding-top: 4px;
+  padding-bottom: 4px;
   font-weight: 500;
   border-bottom: 1px solid #ddd;
-  background-color: #34a080;
+  background-color: #cecece;
   text-align: center;
-  color: #fff;
+  color: #000;
+  font-size: 15px;
+  text-align: left;
 }
 
 .routes-list-wrapper{
@@ -28,14 +38,35 @@
         background-color: rgba(102, 157, 246, 1);
         color: white;
         font-weight: 500!important;
+        border-radius: 3px;
       }
 
       .route-heading{
         font-weight: 500;
         margin-bottom: 5px;
+        font-size: 16px;
       }
     }
   }
+}
+.icon {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  background-size: cover;
+}
+
+.icon-fast {
+  background-image: url(./../../assets/images/fastest.svg);
+}
+.icon-safe {
+  background-image: url(./../../assets/images/safe.svg);
+}
+.icon-green {
+  background-image: url(./../../assets/images/green.svg);
+}
+.icon-safe-green {
+  background-image: url(./../../assets/images/safe_green.svg);
 }
 
 .directions li span.arrow {

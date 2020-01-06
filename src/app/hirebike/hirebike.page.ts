@@ -319,7 +319,7 @@ export class HirebikePage implements OnInit {
       let routeResp = JSON.parse(resp.data.routes[i].route);
       let route = routeResp.response.route[0];
       //console.log(route);
-      this.setRouteOptions(route, i, resp.data.routes[i].mode, selectedRouteIndex);
+      this.setRouteOptions(route, i, resp.data.routes[i].mode, selectedRouteIndex, resp.data.routes[i].prediction);
       if (i !== selectedRouteIndex) {
         this.drawRouteLine(route, i);
       }
@@ -341,16 +341,16 @@ export class HirebikePage implements OnInit {
 
   routeList = {};
 
-  setRouteOptions(route, index, mode, selectedRouteIndex) {
+  setRouteOptions(route, index, mode, selectedRouteIndex, prediction) {
     let content = '';
     let selected = false;
-    content += 'Total distance: ' + route.summary.distance + 'm. ';
-    content += 'Travel Time: ' + Math.floor(route.summary.travelTime / 60) + ' min';
-    console.log(content);
+    content += 'Total distance: ' + route.summary.distance + 'm';
+    //content += 'Travel Time: ' + Math.floor(route.summary.travelTime / 60) + ' min';
+    let time = 'Travel Time: ' + Math.floor(route.summary.travelTime / 60) + ' min';
     if (index === selectedRouteIndex) {
       selected = true;
     }
-    this.routeList[index] = { route: route, summary: content, mode: mode, selected: selected };
+    this.routeList[index] = { route: route, summary: content, mode: mode, selected: selected, prediction:prediction, time:time };
   }
 
   isRouteSelected = false;

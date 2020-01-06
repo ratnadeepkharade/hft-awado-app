@@ -77,12 +77,23 @@
           </div>
         </div>
         <div class="routes-list-wrapper">
-          <div class="routes-list-inner">
-            <div class="route-option-wrapper" *ngFor="let route of routeList | keyvalue; let i = index">
-              <div class="route-option-inner" [ngClass]="{'selected': route.value.selected}" (click)="selectRoute(route.value.route, i)">
+          <div class="routes-list-inner" style="padding: 8px; padding-bottom: 0;">
+            <div class="route-option-wrapper" style="margin-bottom: 10px;
+            box-shadow: 0px 0px 3px 0px rgba(15, 22, 33, 0.3);
+            background-color: #f5f5f5; border-radius: 3px; min-height: 70px;" *ngFor="let route of routeList | keyvalue; let i = index">
+              <div class="route-option-inner" style="position: relative; min-height: 70px; padding-left: 70px;" [ngClass]="{'selected': route.value.selected}" (click)="selectRoute(route.value.route, i)">
+                <div class="icon-wrapper" style="position: absolute; top: 8px; left: 8px;"><span class="icon"
+                  [ngClass]="{
+                    'icon-fast':route.value.mode === 'NORMAL',
+                    'icon-safe':route.value.mode === 'ACCIDENTS',
+                    'icon-green':route.value.mode === 'AIR_POLLUTION',
+                    'icon-safe-green':route.value.mode === 'AIR_POLLUTION_AND_ACCIDENTS'
+                  }"></span></div>
                 <div class="route-heading">{{getRouteType(route.value.mode)}}:</div>
-                <div class="route-summary">{{route.value.summary}}</div>
-                <div class="route-prediction"></div>
+                <div class="route-summary"><span style="text-align:left;">{{route.value.summary}}<span style="float:right;">
+                  {{route.value.time}}
+              </span></span></div>
+                <div class="route-prediction">Prediction: {{route.value.prediction}}</div>
               </div>
             </div>
           </div>
