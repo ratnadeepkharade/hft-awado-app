@@ -18,13 +18,22 @@
   color: #444444;
 
   .route-option-wrapper{
-    padding: 8px;
-    border-bottom: 1px solid #ddd;
-    font-size: 14px;
 
-    .route-heading{
-      font-weight: 500;
-      margin-bottom: 5px;
+    .route-option-inner{
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+      font-size: 14px;
+
+      &.selected{
+        background-color: rgba(102, 157, 246, 1);
+        color: white;
+        font-weight: 500!important;
+      }
+
+      .route-heading{
+        font-weight: 500;
+        margin-bottom: 5px;
+      }
     }
   }
 }
