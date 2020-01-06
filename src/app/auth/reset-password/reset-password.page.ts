@@ -33,8 +33,11 @@ export class ResetPasswordPage implements OnInit {
   resetPassword(){
     if(this.oldPassword=="" || this.confirmPassword=="" || this.newPassword=="")
     this.toastService.showToast("All Feilds are mandatory");
+    else if(this.newPassword.length < 4)
+    this.toastService.showToast("Weak Password");
     else if(this.confirmPassword!=this.newPassword)
     this.toastService.showToast("Please Confirm Password Again");
+    
     else{
     this.storage.get('token').then((token) => {
       let url = 'http://193.196.52.237:8081/password-reset/'
