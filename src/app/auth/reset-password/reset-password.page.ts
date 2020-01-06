@@ -31,7 +31,9 @@ export class ResetPasswordPage implements OnInit {
     this.router.navigateByUrl('/login');
   }
   resetPassword(){
-    if(this.confirmPassword!=this.newPassword)
+    if(this.oldPassword=="" || this.confirmPassword=="" || this.newPassword=="")
+    this.toastService.showToast("All Feilds are mandatory");
+    else if(this.confirmPassword!=this.newPassword)
     this.toastService.showToast("Please Confirm Password Again");
     else{
     this.storage.get('token').then((token) => {
