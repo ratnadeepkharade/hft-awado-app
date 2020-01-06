@@ -278,7 +278,9 @@ export class HirebikePage implements OnInit {
         allNoGoAreas.push(routes[i].actualNoGoAreas[j]);
       }
     }
-    finalNoGoAreas = [...new Set(allNoGoAreas)];
+    //finalNoGoAreas = [...new Set(allNoGoAreas)];
+    let x = (allNoGoAreas) => allNoGoAreas.filter((v,i) => allNoGoAreas.indexOf(v) === i)
+    finalNoGoAreas = x(allNoGoAreas);
     //let group = new H.map.Group();
     //this.addRectangleToMap();
     for (let i = 0; i < finalNoGoAreas.length; i++){
