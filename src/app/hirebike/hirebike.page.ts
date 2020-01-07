@@ -844,6 +844,122 @@ export class HirebikePage implements OnInit {
     });
   }
 
+  click_item(item) {
+    console.log(item);
+    var geocoder = this.platform.getGeocodingService(),
+      parameters = {
+        locationid: item.locationId,
+        gen: '8'
+      };
+
+    geocoder.geocode(parameters,
+      (result) => {
+        this.isSearched = false;
+        let coord = {
+          lat : result.Response.View[0].Result[0].Location.DisplayPosition.Latitude,
+          lng : result.Response.View[0].Result[0].Location.DisplayPosition.Longitude
+        }
+        this.destinationPosition = { lat: coord.lat, lng: coord.lng };
+        console.log(result.Response.View[0].Result[0].Location.DisplayPosition);
+        if (this.destinationMarker) {
+          this.destinationMarker.setGeometry({ lat: coord.lat, lng: coord.lng })
+        } else {
+          let icon = new H.map.Icon('../../../assets/images/current_location.png');
+          // Create a marker using the previously instantiated icon:
+          this.destinationMarker = new H.map.Marker({ lat: coord.lat, lng: coord.lng }, { icon: icon });
+          // Add the marker to the map:
+          if (!this.locationsGroup) {
+            this.locationsGroup = new H.map.Group();
+          }
+          this.locationsGroup.addObjects([this.destinationMarker]);
+          this.setZoomLevelToPointersGroup();
+        }
+      }, function (error) {
+        console.log(error);
+      });
+  }
+
+
+
+
+
+
+
+  AUTOCOMPLETION_URL = 'https://autocomplete.geocoder.api.here.com/6.2/suggest.json';
+  ajaxRequest = new XMLHttpRequest();
+  query = '';
+  isSearched = false;
+
+  /**
+   * If the text in the text box  has changed, and is not empty,
+   * send a geocoding auto-completion request to the server.
+   *
+   * @param {Object} textBox the textBox DOM object linked to this event
+   * @param {Object} event the DOM event which fired this listener
+   */
+  autoCompleteListener(searchValue) {
+
+    if (this.query != searchValue) {
+      if (searchValue.length >= 1) {
+
+        /**
+        * A full list of available request parameters can be found in the Geocoder Autocompletion
+        * API documentation.
+        *
+        */
+        var params = '?' +
+          'query=' + encodeURIComponent(searchValue) +   // The search text which is the basis of the query
+          '&beginHighlight=' + encodeURIComponent('<mark>') + //  Mark the beginning of the match in a token. 
+          '&endHighlight=' + encodeURIComponent('</mark>') + //  Mark the end of the match in a token. 
+          '&maxresults=5' +  // The upper limit the for number of suggestions to be included 
+          '&prox=' + this.currentUserPosition.lat + ',' + this.currentUserPosition.lng + ',10000' +
+          // in the response.  Default is set to 5.
+          '&app_id=' + 'YSAnHxghC6xWxaZ7Wehn' +
+          '&app_code=' + 'mQFi1FqoEypbfQDJjMENPg';
+        let bikeReservationStatusApi = this.httpClient.get(this.AUTOCOMPLETION_URL + params);
+        bikeReservationStatusApi.subscribe((resp: any) => {
+          console.log('Search Results', resp);
+          this.list_to_show = resp.suggestions;
+          this.isSearched = true;
+        }, (bikeDetailsError) => {
+          console.log(bikeDetailsError);
+        });
+      }
+    }
+  }
+  list_to_show = [];
+  searchValue = '';
+  searchValueChanged() {
+    console.log(this.searchValue);
+    // var geocodingParams = {
+    //   searchText: this.searchValue
+    // };
+    this.autoCompleteListener(this.searchValue);
+    // this.geocoder.geocode(geocodingParams, this.onSearchResult, function(e) {
+    //   console.log(e);
+    // });
+  }
+
+  // Get an instance of the geocoding service:
+  geocoder: any;
+
+  onSearchResult(result) {
+    var locations = result.Response.View[0].Result,
+      position,
+      marker;
+
+    console.log(result);
+    // Add a marker for each location found
+    // for (let i = 0;  i < locations.length; i++) {
+    //   position = {
+    //     lat: locations[i].Location.DisplayPosition.Latitude,
+    //     lng: locations[i].Location.DisplayPosition.Longitude
+    //   };
+    //   marker = new H.map.Marker(position);
+    //   this.map.addObject(marker);
+    // }
+  }
+
   ionViewDidLeave() {
     if (this.mapElement) {
       this.mapElement.nativeElement.remove();

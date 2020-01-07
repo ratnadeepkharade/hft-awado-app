@@ -10,6 +10,15 @@
 </ion-header>
 
 <ion-content>
+  <ion-searchbar [(ngModel)]="searchValue" (search)="searchValueChanged()"></ion-searchbar>
+  <div *ngIf="isSearched">
+    <ion-list>
+      <ion-item *ngFor="let item of list_to_show; let i = index">
+        <ion-label (click)="click_item(item)" [innerHTML]="item.address.city +', '+ item.address.district+', '+item.address.street"></ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+
   <!--div>
     <ion-item *ngIf="!isBikeHired">
       <ion-input type="text" [(ngModel)]="Destination" placeholder="Enter Destination"></ion-input>
