@@ -47,7 +47,7 @@ export class HirebikePage implements OnInit {
   private defaultLayers: any;
   private locationsGroup: any;
 
-  private currentUserPosition = { lat: 48.783480, lng: 9.180319 };
+  private currentUserPosition = { lat: 48.783480, lng: 9.180319, altitude: 250 };
   private bikePosition = { lat: 48.783480, lng: 9.180319 };
   private destinationPosition = { lat: 48.783480, lng: 9.180319 };
 
@@ -97,13 +97,19 @@ export class HirebikePage implements OnInit {
     }
 
     this.locationService.liveLocationSubject.subscribe((position) => {
-      console.log('got location inside home subscription');
+      console.log('got location inside my ride subscription');
+      console.log(position);
       this.currentUserPosition.lat = position.lat;
       this.currentUserPosition.lng = position.lng;
+      this.currentUserPosition.altitude = position.altitude;
       if (this.currentLocationMarker) {
         this.currentLocationMarker.setGeometry({ lat: this.currentUserPosition.lat, lng: this.currentUserPosition.lng })
       } else {
         this.showUserLocationOnMap(this.currentUserPosition.lat, this.currentUserPosition.lng);
+      }
+      // bike already rented
+      if(this.isTripStarted) { 
+        this.map.setCenter({ lat: this.currentUserPosition.lat, lng: this.currentUserPosition.lng });
       }
     });
     this.getReservedBike();
@@ -437,30 +443,12 @@ export class HirebikePage implements OnInit {
     this.map.removeObject(this.noGoAreas);
   }
 
-  startTrip() {
-    this.isBikeHired = true;
-    this.startRideSubject.next('some value');
-    this.loadingService.showLoader();
-    this.storage.get('token').then((token) => {
-      const bikeId = this.bikeDetails.id;
-      let url = 'http://193.196.52.237:8081/rent' + '?bikeId=' + this.bikeDetails.id;
-      const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
-      let bikeApi = this.httpClient.get(url, { headers });
-      bikeApi.subscribe((resp) => {
-        console.log('my data: ', resp);
+  previousPositionObj:any = {};
+  currentPositionObj:any = {};
+  batteryLevelSentCount = 0;
 
-        this.loadingService.hideLoader();
-        this.toastService.showToast("Trip Started");
-        this.isBikeHired = true;
-      }, (error) => {
-        console.log(error);
-        this.loadingService.hideLoader();
-        this.toastService.showToast("This is ongoing Trip");
-      });
-    });
-
-  }
-
+  intervalRef: any;
+  locationList = [];
   startTrip2() {
     this.isBikeHired = true;
     this.isTripStarted = true;
@@ -473,10 +461,25 @@ export class HirebikePage implements OnInit {
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       let bikeApi = this.httpClient.get(url, { headers });
       bikeApi.subscribe((resp) => {
-        console.log('my data: ', resp);
+        console.log('Trip Started: ', resp);
         this.loadingService.hideLoader();
         this.toastService.showToast("Trip Started");
         this.isBikeHired = true;
+        this.currentPositionObj = {
+          lattitude: this.currentUserPosition.lat,
+          longitude: this.currentUserPosition.lng,
+          altitude: this.currentUserPosition.altitude,
+        }
+        if(this.batteryLevelSentCount === 0) {
+          this.previousPositionObj = this.currentPositionObj;
+          this.intervalRef = setInterval(() => {
+            this.sendUsageDataToBackend();
+          }, 20000);
+        } else {
+          this.intervalRef = setInterval(() => {
+            this.sendUsageDataToBackend();
+          }, 300000);
+        }
       }, (error) => {
         console.log(error);
         this.loadingService.hideLoader();
@@ -486,11 +489,47 @@ export class HirebikePage implements OnInit {
 
   }
 
+  // this function will draw route after start trip button is clicked
   drawFinalRouteonMap() {
     this.map.removeObjects(this.map.getObjects());
     this.addRouteShapeToMap(this.selectedRoute);
     this.addManueversToMap(this.selectedRoute);
     this.mapDataService.mapDataSubject.next(this.selectedRoute);
+    this.currentLocationMarker = null;
+    //get user location
+    if (this.currentLocationMarker) {
+      this.currentLocationMarker.setGeometry({ lat: this.currentUserPosition.lat, lng: this.currentUserPosition.lng })
+    } else {
+      this.showUserLocationOnMapForRouting(this.currentUserPosition.lat, this.currentUserPosition.lng);
+    }
+  }
+  
+  //send bike usage data to backend every 2 minutes
+  sendUsageDataToBackend() {
+    this.storage.get('token').then((token) => {
+      let url = 'http://193.196.52.237:8081/batteryLevel';
+      const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
+      let batteryLevelApi = this.httpClient.get<any>(url,{headers});
+      batteryLevelApi.subscribe((batteryResp) => {
+        console.log("Battery Level Response", batteryResp);
+        let url = 'http://193.196.52.237:8081/segment';
+        const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
+        this.currentPositionObj.batteryLevel = batteryResp.data;
+        this.currentPositionObj.altitude = this.currentUserPosition.altitude;
+        let requestObject =  {
+          previousPosition: this.previousPositionObj,
+          currentPosition: this.currentPositionObj
+        }
+        let usageDataApi = this.httpClient.post<any>(url, {requestObject}, {headers});
+        usageDataApi.subscribe((resp) => {
+          console.log("Usage api response", resp);
+          this.previousPositionObj = this.currentPositionObj;
+          this.batteryLevelSentCount++;
+          this.locationList.push(this.currentPositionObj);
+        }, (error) => console.log(error));
+
+      }, (error) => console.log(error));
+    });
   }
 
   CancelTrip() {
@@ -807,6 +846,20 @@ export class HirebikePage implements OnInit {
     //this.map.setCenter({ lat: lat, lng: lng });
   }
 
+  showUserLocationOnMapForRouting(lat, lng) {
+    let svgMarkup = '<svg width="24" height="24" ' +
+      'xmlns="http://www.w3.org/2000/svg">' +
+      '<circle cx="10" cy="10" r="10" ' +
+      'fill="#007cff" stroke="white" stroke-width="2"  />' +
+      '</svg>';
+    let icon = new H.map.Icon(svgMarkup);
+    // Create a marker using the previously instantiated icon:
+    this.currentLocationMarker = new H.map.Marker({ lat: lat, lng: lng }, { icon: icon });
+    // Add the marker to the map:
+    this.map.addObject(this.currentLocationMarker);
+    this.map.setCenter({ lat: lat, lng: lng });
+  }
+
   addMarker(lat, lng, img) {
     var icon = new H.map.Icon(img);
     // Create a marker using the previously instantiated icon:
@@ -961,8 +1014,12 @@ export class HirebikePage implements OnInit {
   }
 
   ionViewDidLeave() {
+    console.log("Route: Ion View Left.")
     if (this.mapElement) {
       this.mapElement.nativeElement.remove();
+    }
+    if (this.intervalRef) {
+      clearInterval(this.intervalRef);
     }
     // if(this.locationService.liveLocationSubject) {
     //   this.locationService.liveLocationSubject.unsubscribe();
