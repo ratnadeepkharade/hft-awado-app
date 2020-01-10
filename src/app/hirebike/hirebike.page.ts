@@ -478,7 +478,7 @@ export class HirebikePage implements OnInit {
         } else {
           this.intervalRef = setInterval(() => {
             this.sendUsageDataToBackend();
-          }, 20000);
+          }, 300000);
         }
       }, (error) => {
         console.log(error);
