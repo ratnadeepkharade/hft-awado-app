@@ -8,6 +8,8 @@ import { ToastService } from '../services/toast.service';
 import { Router } from '@angular/router';
 import { LocationService } from '../services/location.service';
 import { LoadingService } from '../services/loading.service';
+import { DistanceService } from '../services/distance.service';
+
 
 declare var H: any;
 
@@ -29,6 +31,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   public isDetailsVisible = false;
   public selectedBike = { id: 0 };
+  public distance="";
   public isBikeReserved = false;
 
   public currentLocationMarker: any;
@@ -42,6 +45,7 @@ export class HomePage implements OnInit, OnDestroy {
     public httpClient: HttpClient,
     private storage: Storage,
     private toastService: ToastService,
+    public distanceService: DistanceService,
     public locationService: LocationService,
     public loadingService: LoadingService) {
 
@@ -261,6 +265,8 @@ export class HomePage implements OnInit, OnDestroy {
 
   showBikeDetails(bike) {
     this.selectedBike = bike;
+    this.distance= bike.distance;
+    this.distanceService.setDistance(this.distance);
     this.isDetailsVisible = true;
   }
 
@@ -297,5 +303,6 @@ export class HomePage implements OnInit, OnDestroy {
     //   this.locationService.liveLocationSubject.unsubscribe();
     // }
   }
+  
 
 }

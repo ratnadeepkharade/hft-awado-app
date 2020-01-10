@@ -9,6 +9,7 @@ import { ToastService } from '../services/toast.service';
 import { Router } from '@angular/router';
 import { LocationService } from '../services/location.service';
 import { LoadingService } from '../services/loading.service';
+import { DistanceService } from '../services/distance.service';
 
 declare var H: any;
 
@@ -30,6 +31,7 @@ export class MyreservationPage implements OnInit {
   isBikeHired = false;
   address = "sample";
   isBikeReserved = true;
+  distance="0";
 
   private currentUserPosition = { lat: 48.783480, lng: 9.180319 };
 
@@ -58,6 +60,7 @@ export class MyreservationPage implements OnInit {
     private toastService: ToastService,
     private router: Router,
     public locationService: LocationService,
+    public distanceService: DistanceService,
     public loadingService: LoadingService) {
     this.platform = new H.service.Platform({
       'apikey': 'tiVTgBnPbgV1spie5U2MSy-obhD9r2sGiOCbBzFY2_k'
@@ -149,6 +152,7 @@ export class MyreservationPage implements OnInit {
             console.log('Bike Details', resp);
             this.loadingService.hideLoader();
             this.bikeDetails = resp.data;
+            this.distance = this.distanceService.getDistance();
             this.reverseGeocode(this.platform, this.bikeDetails.lat, this.bikeDetails.lon);
             this.isBikeReserved = true;
             this.addBikeOnMap();
