@@ -192,7 +192,7 @@ export class HirebikePage implements OnInit {
             console.log('Bike Details', resp);
             this.bikeDetails = resp.data;
             this.noReservation = false;
-            this.reverseGeocode(this.platform, this.bikeDetails.lat, this.bikeDetails.lon);
+            //this.reverseGeocode(this.platform, this.bikeDetails.lat, this.bikeDetails.lon);
             this.isBikeReserved = true;
 
             //pass reserved bike subject here map
@@ -784,13 +784,14 @@ export class HirebikePage implements OnInit {
   isDestinationSelected = false;
 
   mapClickedEvent(event) {
-    if (this.rideStarted) {
+    if (this.rideStarted || this.gotRouteOptions) {
       return;
     }
     //console.log(event.type, event.currentPointer.type);
     var coord = this.map.screenToGeo(event.currentPointer.viewportX,
       event.currentPointer.viewportY);
-    console.log(coord.lat + ', ' + coord.lng);
+    console.log(coord);
+    this.reverseGeocode(this.platform, coord.lat, coord.lng);
 
     this.destinationPosition = { lat: coord.lat, lng: coord.lng };
     this.isDestinationSelected = true;
@@ -887,10 +888,10 @@ export class HirebikePage implements OnInit {
       };
 
     geocoder.reverseGeocode(parameters, result => {
-      var streets = result.Response.View[0].Result[0].Location.Address.Street;
-      var houseNumber = result.Response.View[0].Result[0].Location.Address.HouseNumber;
-      var zipcode = result.Response.View[0].Result[0].Location.Address.PostalCode;
-
+      var streets = result.Response.View[0].Result[0].Location.Address.Street || '';
+      var houseNumber = result.Response.View[0].Result[0].Location.Address.HouseNumber || '';
+      var zipcode = result.Response.View[0].Result[0].Location.Address.PostalCode || '';
+      this.searchValue = streets + ', ' + houseNumber;
       return streets + houseNumber + zipcode;
     }, (error) => {
       alert(error);
