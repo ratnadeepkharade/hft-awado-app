@@ -264,10 +264,13 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   showBikeDetails(bike) {
+    //console.log(bike);
     this.selectedBike = bike;
     this.distance= bike.distance;
     this.distanceService.setDistance(this.distance);
     this.isDetailsVisible = true;
+    this.map.setCenter({ lat: bike.lat, lng: bike.lon });
+    this.map.setZoom(17);
   }
 
   reserveBike() {
