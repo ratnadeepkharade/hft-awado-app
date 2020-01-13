@@ -66,9 +66,12 @@ export class FeedbackPage implements OnInit {
       this.feedbackApi.subscribe((resp) => {
         //console.log("rides response", resp);
         this.isDetailsVisible = false;
-        this.router.navigateByUrl('/ridehistory');
+        this.toastService.showToast("Feedback Successful!")
+        this.router.navigateByUrl('/home');
+       
         //this.loadingService.hideLoader();
       }, (error) => {console.log(error)
+        this.toastService.showToast("Feedback failed !")
         //this.loadingService.hideLoader();
       });
     });
