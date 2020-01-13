@@ -283,10 +283,12 @@ export class HomePage implements OnInit, OnDestroy {
         this.toastService.showToast("Reservation Successful!");
         this.router.navigateByUrl('/myreservation');
         this.loadingService.hideLoader();
+        this.isDetailsVisible = false;
       }, (error) => {
         console.log(error);
         this.loadingService.hideLoader();
         this.toastService.showToast("Only one bike may be reserved or rented at a time");
+        this.isDetailsVisible = false;
       });
     });
   }

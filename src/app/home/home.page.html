@@ -37,7 +37,7 @@
             </ion-row>
             <ion-row>
               <ion-col size="1"><ion-icon name="pin"></ion-icon></ion-col>
-              <ion-col>{{bike.address + " " + (bike.HouseNumber || "")}}</ion-col>
+              <ion-col>{{(bike.address || "") + " " + (bike.HouseNumber || "")}}</ion-col>
             </ion-row>
           </ion-grid>
           <div class="battery-info1">
