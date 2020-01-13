@@ -52,22 +52,22 @@ export class HereMapComponent implements OnInit {
 
     let watch = this.geolocation.watchPosition({ enableHighAccuracy: true, maximumAge: 10000 });
     watch.subscribe((position) => {
-      console.log(position.coords.latitude);
-      console.log(position.coords.longitude);
+      //console.log(position.coords.latitude);
+      //console.log(position.coords.longitude);
       this.currentUserPosition.lat = position.coords.latitude;
       this.currentUserPosition.lng = position.coords.longitude;
       if (this.currentLocationMarker) {
         this.currentLocationMarker.setGeometry({ lat: position.coords.latitude, lng: position.coords.longitude });
       }
     }, (errorObj) => {
-      console.log(errorObj.code + ": " + errorObj.message);
+      //console.log(errorObj.code + ": " + errorObj.message);
     });
   }
 
   ngOnInit() {
     this.gotReservedBikeSubject.subscribe(bikeDetails => {
-      console.log('Got Bike in map');
-      console.log(bikeDetails);
+      //console.log('Got Bike in map');
+      //console.log(bikeDetails);
       this.bikePosition.lat = bikeDetails.lat;
       this.bikePosition.lng = bikeDetails.lon;
       var img = ['../../../assets/images/100_percent.png', '../../../assets/images/75_percent.png', '../../../assets/images/50_percent.png', '../../../assets/images/25_percent.png', '../../../assets/images/0_percent.png'];
@@ -85,7 +85,7 @@ export class HereMapComponent implements OnInit {
     });
 
     this.startRideSubject.subscribe(event => {
-      console.log('start ride');
+      //console.log('start ride');
       //remove event listener
       this.rideStarted = true;
       this.calculateRoute();
@@ -312,7 +312,7 @@ export class HereMapComponent implements OnInit {
     //console.log(event.type, event.currentPointer.type);
     var coord = this.map.screenToGeo(event.currentPointer.viewportX,
       event.currentPointer.viewportY);
-    console.log(coord.lat + ', ' + coord.lng);
+    //console.log(coord.lat + ', ' + coord.lng);
 
     this.destinationPosition = { lat: coord.lat, lng: coord.lng };
 
@@ -333,7 +333,7 @@ export class HereMapComponent implements OnInit {
 
   //TODO change this logic
   getCurrentPosition() {
-    console.log(this.currentLocationMarker);
+    //console.log(this.currentLocationMarker);
     if (!this.currentLocationMarker) {
       this.showUserLocationOnMap(this.currentUserPosition.lat, this.currentUserPosition.lng);
     }

@@ -33,7 +33,7 @@ export class RidehistoryPage implements OnInit {
         const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
         this.rideApi = this.httpClient.get(url, { headers });
         this.rideApi.subscribe((resp) => {
-          console.log("rides response", resp);
+          //console.log("rides response", resp);
           this.rides = resp.data;
           for (let i = 0; i < this.rides.length; i++) {
             this.rides[i] = this.rides[i];

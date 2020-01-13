@@ -64,7 +64,7 @@ export class FeedbackPage implements OnInit {
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       this.feedbackApi = this.httpClient.post<any>(url, {"content": Form,"bikeId":this.feedbackService.getBikeid()},{headers});
       this.feedbackApi.subscribe((resp) => {
-        console.log("rides response", resp);
+        //console.log("rides response", resp);
         this.isDetailsVisible = false;
         this.router.navigateByUrl('/ridehistory');
         //this.loadingService.hideLoader();

@@ -18,7 +18,7 @@ export class RestService {
 
   getToken() {
     this.storage.get('token').then((val) => {
-      console.log('token', val);
+      //console.log('token', val);
       return val;
     });
   }

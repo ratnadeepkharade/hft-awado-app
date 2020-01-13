@@ -33,7 +33,7 @@ export class SettingsPage implements OnInit {
           role: 'cancel',
           cssClass: 'secondary',
           handler: (blah) => {
-            console.log('Confirm Cancel: blah');
+            //console.log('Confirm Cancel: blah');
             this.router.navigateByUrl('/settings');
           }
         }, {
@@ -45,12 +45,12 @@ export class SettingsPage implements OnInit {
               const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
               let deactivateApi = this.httpClient.delete(url, { headers });
               deactivateApi.subscribe((resp:any) => {
-                console.log('my data: ', resp);
+                //console.log('my data: ', resp);
                 this.router.navigateByUrl('/login');
                 this.toastService.showToast("User account has been deactivated!");
                 
               }, (error) => {
-                console.log(error);
+                //console.log(error);
                 
               });
             });

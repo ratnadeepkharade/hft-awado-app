@@ -91,7 +91,7 @@ export class MyreservationPage implements OnInit {
     this.getReservedBike();
 
     this.locationService.liveLocationSubject.subscribe((position) => {
-      console.log('got location inside home subscription');
+      //console.log('got location inside home subscription');
       this.currentUserPosition.lat = position.lat;
       this.currentUserPosition.lng = position.lng;
       if (this.currentLocationMarker) {
@@ -141,7 +141,7 @@ export class MyreservationPage implements OnInit {
       let reserveUrl = 'http://193.196.52.237:8081/active-rent';
       let bikeReservationStatusApi = this.httpClient.get(reserveUrl, { headers });
       bikeReservationStatusApi.subscribe((resp: any) => {
-        console.log('Reserved Bike', resp);
+        //console.log('Reserved Bike', resp);
         if (resp.data) {
           this.reservedBike = resp.data;
           this.isBikeHired = this.reservedBike.rented;
@@ -149,7 +149,7 @@ export class MyreservationPage implements OnInit {
           let bikeDetailsUrl = 'http://193.196.52.237:8081/bikes/' + this.reservedBike.bikeId;
           let bikeDetailsApi = this.httpClient.get(bikeDetailsUrl, { headers });
           bikeDetailsApi.subscribe((resp: any) => {
-            console.log('Bike Details', resp);
+            //console.log('Bike Details', resp);
             this.loadingService.hideLoader();
             this.bikeDetails = resp.data;
             this.distance = this.distanceService.getDistance();
@@ -164,11 +164,11 @@ export class MyreservationPage implements OnInit {
             // show route on map
             this.mapRouter.calculateRoute(this.routingParameters, this.onResult.bind(this),
               (error) => {
-                console.log(error.message);
+                //console.log(error.message);
               });
           }, (reservedBikeError) => {
             this.loadingService.hideLoader();
-            console.log(reservedBikeError);
+            //console.log(reservedBikeError);
             this.isBikeReserved = false;
           });
         } else {
@@ -177,7 +177,7 @@ export class MyreservationPage implements OnInit {
         }
       }, (bikeDetailsError) => {
         this.loadingService.hideLoader();
-        console.log(bikeDetailsError)
+        //console.log(bikeDetailsError)
         this.isBikeReserved = false;
       });
     });
@@ -189,7 +189,7 @@ export class MyreservationPage implements OnInit {
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       let bikeApi = this.httpClient.delete(url, { headers });
       bikeApi.subscribe((resp) => {
-        console.log('Reservation Cancelled: ', resp);
+        //console.log('Reservation Cancelled: ', resp);
         this.toastService.showToast("Bike Reservation successfully cancelled.");
         this.router.navigateByUrl('/home');
       }, (error) => console.log(error));
@@ -278,7 +278,7 @@ export class MyreservationPage implements OnInit {
       };
 
     geocoder.reverseGeocode(parameters, result => {
-      console.log(result);
+      //console.log(result);
       var streets = result.Response.View[0].Result[0].Location.Address.Street;
       var houseNumber = result.Response.View[0].Result[0].Location.Address.HouseNumber;
       var zipcode = result.Response.View[0].Result[0].Location.Address.PostalCode;

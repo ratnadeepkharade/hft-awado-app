@@ -13,7 +13,7 @@ export class LocationService {
   constructor(private geolocation: Geolocation) {
     let watch = this.geolocation.watchPosition({ enableHighAccuracy: true, maximumAge: 10000 });
     watch.subscribe((position) => {
-      console.log(position);
+      //console.log(position);
       let altitude = position.coords.altitude;
       if (!altitude) {
         altitude = 250;
@@ -28,7 +28,7 @@ export class LocationService {
 
       this.getUserLiveLocation(this.currentUserPosition);
     }, (errorObj) => {
-      console.log('Error getting live location, setting to previous location');
+      //console.log('Error getting live location, setting to previous location');
       this.getUserLiveLocation(this.preiousUserPosition);
     });
   }
@@ -37,7 +37,7 @@ export class LocationService {
     return new Promise((resolve, reject) => {
 
       this.geolocation.getCurrentPosition().then((resp) => {
-        console.log(resp);
+        //console.log(resp);
         let lat = resp.coords.latitude;
         let lng = resp.coords.longitude;
         let altitude = resp.coords.altitude;
@@ -54,10 +54,10 @@ export class LocationService {
         this.preiousUserPosition.altitude = altitude;
         resolve(this.currentUserPosition);
       }, er => {
-        console.log('error getting location setting to previous location');
+        //console.log('error getting location setting to previous location');
         resolve(this.preiousUserPosition);
       }).catch((error) => {
-        console.log('error getting location setting to previous location');
+        //console.log('error getting location setting to previous location');
         resolve(this.preiousUserPosition);
       });
     });

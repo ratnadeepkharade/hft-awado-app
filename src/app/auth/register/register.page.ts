@@ -51,7 +51,7 @@ export class RegisterPage implements OnInit {
     this.registerApi = this.httpClient.post('http://193.196.52.237:8081/register', Form,{headers});
     this.registerApi
       .subscribe((data) => {
-        console.log('my data: ', data);
+        //console.log('my data: ', data);
         this.restService.setToken(data.token);
         this.toastService.showToast("Registration Successful!")
         this.router.navigateByUrl('/login');

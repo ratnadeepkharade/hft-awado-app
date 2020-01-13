@@ -45,7 +45,7 @@ export class ResetPasswordPage implements OnInit {
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       this.ResetPasswordApi = this.httpClient.post<any>(url, {"oldPassword":this.oldPassword,"newPassword": this.newPassword},{headers});
       this.ResetPasswordApi.subscribe((resp) => {
-        console.log("PasswordChanged", resp);
+        //console.log("PasswordChanged", resp);
         
         this.toastService.showToast("Password Changed Sucessfully!Login Again");
         this.router.navigateByUrl('/login');

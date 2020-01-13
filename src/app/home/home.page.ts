@@ -74,7 +74,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.getBikesList();
 
     this.locationService.liveLocationSubject.subscribe((position) => {
-      console.log('got location inside home subscription');
+      //console.log('got location inside home subscription');
       this.currentUserPosition.lat = position.lat;
       this.currentUserPosition.lng = position.lng;
       if (this.currentLocationMarker) {
@@ -143,7 +143,7 @@ export class HomePage implements OnInit, OnDestroy {
 
     // listen for map click event
     this.map.addEventListener('tap', (event) => {
-      console.log(event.type, event.currentPointer.type);
+      //console.log(event.type, event.currentPointer.type);
     });
 
     this.locationsGroup = new H.map.Group();
@@ -156,7 +156,7 @@ export class HomePage implements OnInit, OnDestroy {
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       this.bikeApi = this.httpClient.get(url, { headers });
       this.bikeApi.subscribe((resp) => {
-        console.log("bikes response", resp);
+        //console.log("bikes response", resp);
         this.bikes = resp;
         for (let i = 0; i < this.bikes.length; i++) {
           this.bikes[i].distance = this.bikes[i].distance.toFixed(2);;
@@ -278,14 +278,14 @@ export class HomePage implements OnInit, OnDestroy {
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       this.bikeApi = this.httpClient.get(url, { headers });
       this.bikeApi.subscribe((resp) => {
-        console.log('my data: ', resp);
+        //console.log('my data: ', resp);
         this.isBikeReserved = true;
         this.toastService.showToast("Reservation Successful!");
         this.router.navigateByUrl('/myreservation');
         this.loadingService.hideLoader();
         this.isDetailsVisible = false;
       }, (error) => {
-        console.log(error);
+        //console.log(error);
         this.loadingService.hideLoader();
         this.toastService.showToast("Only one bike may be reserved or rented at a time");
         this.isDetailsVisible = false;

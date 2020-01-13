@@ -19,7 +19,7 @@ export class LoadingService {
       res.present();
 
       res.onDidDismiss().then((dis) => {
-        console.log('Loading dismissed!');
+        //console.log('Loading dismissed!');
       });
     });
   }

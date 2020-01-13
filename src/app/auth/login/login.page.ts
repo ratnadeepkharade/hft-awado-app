@@ -52,7 +52,7 @@ export class LoginPage implements OnInit {
         this.router.navigateByUrl('/home');
         //this.loadingService.hideLoader();
       }, (error) => {
-        console.log(JSON.stringify(error));
+        //console.log(JSON.stringify(error));
         this.correctCredentials = true;
         //this.loadingService.hideLoader();
       });

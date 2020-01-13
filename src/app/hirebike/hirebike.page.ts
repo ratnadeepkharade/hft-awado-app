@@ -97,8 +97,8 @@ export class HirebikePage implements OnInit {
     }
 
     this.locationService.liveLocationSubject.subscribe((position) => {
-      console.log('got location inside my ride subscription');
-      console.log(position);
+      //console.log('got location inside my ride subscription');
+      //console.log(position);
       this.currentUserPosition.lat = position.lat;
       this.currentUserPosition.lng = position.lng;
       this.currentUserPosition.altitude = position.altitude;
@@ -115,8 +115,8 @@ export class HirebikePage implements OnInit {
     this.getReservedBike();
 
     this.mapDataService.mapDataSubject.subscribe(receiveddata => {
-      console.log('data received ');
-      console.log(receiveddata);
+      //console.log('data received ');
+      //console.log(receiveddata);
       this.currentRoute = receiveddata;
       let content = '';
       content += 'Total distance: ' + receiveddata.summary.distance + 'm. ';
@@ -131,8 +131,8 @@ export class HirebikePage implements OnInit {
     });
 
     this.gotReservedBikeSubject.subscribe(bikeDetails => {
-      console.log('Got Bike in map');
-      console.log(bikeDetails);
+      //console.log('Got Bike in map');
+      //console.log(bikeDetails);
       this.bikePosition.lat = bikeDetails.lat;
       this.bikePosition.lng = bikeDetails.lon;
       var img = ['../../../assets/images/100_percent.png', '../../../assets/images/75_percent.png', '../../../assets/images/50_percent.png', '../../../assets/images/25_percent.png', '../../../assets/images/0_percent.png'];
@@ -152,7 +152,7 @@ export class HirebikePage implements OnInit {
     });
 
     this.startRideSubject.subscribe(event => {
-      console.log('start ride');
+      //console.log('start ride');
       //remove event listener
       this.rideStarted = true;
       this.calculateRoute();
@@ -181,7 +181,7 @@ export class HirebikePage implements OnInit {
       let reserveUrl = 'http://193.196.52.237:8081/active-rent';
       let bikeReservationStatusApi = this.httpClient.get(reserveUrl, { headers });
       bikeReservationStatusApi.subscribe((resp: any) => {
-        console.log('Reserved Bike', resp);
+        //console.log('Reserved Bike', resp);
         if (resp.data) {
           this.reservedBike = resp.data;
           this.isBikeHired = this.reservedBike.rented;
@@ -189,7 +189,7 @@ export class HirebikePage implements OnInit {
           let bikeDetailsUrl = 'http://193.196.52.237:8081/bikes/' + this.reservedBike.bikeId;
           let bikeDetailsApi = this.httpClient.get(bikeDetailsUrl, { headers });
           bikeDetailsApi.subscribe((resp: any) => {
-            console.log('Bike Details', resp);
+            //console.log('Bike Details', resp);
             this.bikeDetails = resp.data;
             this.noReservation = false;
             //this.reverseGeocode(this.platform, this.bikeDetails.lat, this.bikeDetails.lon);
@@ -199,7 +199,7 @@ export class HirebikePage implements OnInit {
             this.gotReservedBikeSubject.next(resp.data);
             this.loadingService.hideLoader();
           }, (reservedBikeError) => {
-            console.log(reservedBikeError);
+            //console.log(reservedBikeError);
             this.loadingService.hideLoader();
             this.isBikeReserved = false;
           });
@@ -208,7 +208,7 @@ export class HirebikePage implements OnInit {
           this.isBikeReserved = false;
         }
       }, (bikeDetailsError) => {
-        console.log(bikeDetailsError);
+        //console.log(bikeDetailsError);
         this.loadingService.hideLoader();
         this.isBikeReserved = false;
       });
@@ -227,7 +227,7 @@ export class HirebikePage implements OnInit {
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       let bikeApi = this.httpClient.get(url, { headers });
       bikeApi.subscribe((resp: any) => {
-        console.log('my data: ', resp);
+        //console.log('my data: ', resp);
         this.loadingService.hideLoader();
         this.isBikeHired = true;
         this.routesResponse = resp;
@@ -240,7 +240,7 @@ export class HirebikePage implements OnInit {
         this.gotRouteOptions = true;
         this.displayNoGoAreas(resp);
       }, (error) => {
-        console.log(error);
+        //console.log(error);
         this.loadingService.hideLoader();
       });
     });
@@ -342,7 +342,7 @@ export class HirebikePage implements OnInit {
 
   displayRouteSummaryAtTop(resp) {
     let firstRoute = JSON.parse(resp.data.routes[0].route).response.route[0];
-    console.log(firstRoute);
+    //console.log(firstRoute);
     let waypointLabels = [];
     for (let i = 0; i < firstRoute.waypoint.length; i += 1) {
       waypointLabels.push(firstRoute.waypoint[i].label)
@@ -461,7 +461,7 @@ export class HirebikePage implements OnInit {
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       let bikeApi = this.httpClient.get(url, { headers });
       bikeApi.subscribe((resp) => {
-        console.log('Trip Started: ', resp);
+        //console.log('Trip Started: ', resp);
         this.loadingService.hideLoader();
         this.toastService.showToast("Trip Started");
         this.isBikeHired = true;
@@ -481,7 +481,7 @@ export class HirebikePage implements OnInit {
           }, 20000);
         }
       }, (error) => {
-        console.log(error);
+        //console.log(error);
         this.loadingService.hideLoader();
         this.toastService.showToast("This is ongoing Trip");
       });
@@ -511,7 +511,7 @@ export class HirebikePage implements OnInit {
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       let batteryLevelApi = this.httpClient.get<any>(url,{headers});
       batteryLevelApi.subscribe((batteryResp) => {
-        console.log("Battery Level Response", batteryResp);
+        //console.log("Battery Level Response", batteryResp);
         let url = 'http://193.196.52.237:8081/segment';
         const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
         this.currentPositionObj.batteryLevel = batteryResp.data;
@@ -522,7 +522,7 @@ export class HirebikePage implements OnInit {
         }
         let usageDataApi = this.httpClient.post<any>(url, {requestObject}, {headers});
         usageDataApi.subscribe((resp) => {
-          console.log("Usage api response", resp);
+          //console.log("Usage api response", resp);
           this.previousPositionObj = this.currentPositionObj;
           this.batteryLevelSentCount++;
           this.locationList.push(this.currentPositionObj);
@@ -539,7 +539,7 @@ export class HirebikePage implements OnInit {
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
       let bikeApi = this.httpClient.delete(url, { headers });
       bikeApi.subscribe(async (resp) => {
-        console.log('my data: ', resp);
+        //console.log('my data: ', resp);
         this.loadingService.hideLoader();
         this.toastService.showToast("Trip Ended!");
         //this.router.navigateByUrl('/feedback');
@@ -552,13 +552,13 @@ export class HirebikePage implements OnInit {
               role: 'cancel',
               cssClass: 'secondary',
               handler: (blah) => {
-                console.log('Confirm Cancel: blah');
+                //console.log('Confirm Cancel: blah');
                 this.router.navigateByUrl('/home');
               }
             }, {
               text: 'Okay',
               handler: () => {
-                console.log('Confirm Okay');
+                //console.log('Confirm Okay');
                 this.router.navigateByUrl('/feedback');
               }
             }
@@ -567,7 +567,7 @@ export class HirebikePage implements OnInit {
 
         await alert.present();
       }, (error) => {
-        console.log(error);
+        //console.log(error);
         this.loadingService.hideLoader();
         this.toastService.showToast("No Ongong Trip to End")
       });
@@ -790,7 +790,7 @@ export class HirebikePage implements OnInit {
     //console.log(event.type, event.currentPointer.type);
     var coord = this.map.screenToGeo(event.currentPointer.viewportX,
       event.currentPointer.viewportY);
-    console.log(coord);
+    //console.log(coord);
     this.reverseGeocode(this.platform, coord.lat, coord.lng);
 
     this.destinationPosition = { lat: coord.lat, lng: coord.lng };
@@ -899,7 +899,7 @@ export class HirebikePage implements OnInit {
   }
 
   click_item(item) {
-    console.log(item);
+    //console.log(item);
     var geocoder = this.platform.getGeocodingService(),
       parameters = {
         locationid: item.locationId,
@@ -914,7 +914,7 @@ export class HirebikePage implements OnInit {
           lng : result.Response.View[0].Result[0].Location.DisplayPosition.Longitude
         }
         this.destinationPosition = { lat: coord.lat, lng: coord.lng };
-        console.log(result.Response.View[0].Result[0].Location.DisplayPosition);
+        //console.log(result.Response.View[0].Result[0].Location.DisplayPosition);
         if (this.destinationMarker) {
           this.destinationMarker.setGeometry({ lat: coord.lat, lng: coord.lng })
         } else {
@@ -929,7 +929,7 @@ export class HirebikePage implements OnInit {
           this.setZoomLevelToPointersGroup();
         }
       }, function (error) {
-        console.log(error);
+        //console.log(error);
       });
   }
 
@@ -972,11 +972,11 @@ export class HirebikePage implements OnInit {
           '&app_code=' + 'mQFi1FqoEypbfQDJjMENPg';
         let bikeReservationStatusApi = this.httpClient.get(this.AUTOCOMPLETION_URL + params);
         bikeReservationStatusApi.subscribe((resp: any) => {
-          console.log('Search Results', resp);
+          //('Search Results', resp);
           this.list_to_show = resp.suggestions;
           this.isSearched = true;
         }, (bikeDetailsError) => {
-          console.log(bikeDetailsError);
+          //console.log(bikeDetailsError);
         });
       }
     }
@@ -984,7 +984,7 @@ export class HirebikePage implements OnInit {
   list_to_show = [];
   searchValue = '';
   searchValueChanged() {
-    console.log(this.searchValue);
+    //console.log(this.searchValue);
     // var geocodingParams = {
     //   searchText: this.searchValue
     // };
@@ -1002,7 +1002,7 @@ export class HirebikePage implements OnInit {
       position,
       marker;
 
-    console.log(result);
+    //console.log(result);
     // Add a marker for each location found
     // for (let i = 0;  i < locations.length; i++) {
     //   position = {
@@ -1015,7 +1015,7 @@ export class HirebikePage implements OnInit {
   }
 
   ionViewDidLeave() {
-    console.log("Route: Ion View Left.")
+    //console.log("Route: Ion View Left.")
     if (this.mapElement) {
       //this.mapElement.nativeElement.remove();
     }
