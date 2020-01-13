@@ -38,7 +38,7 @@ export class LoginPage implements OnInit {
   }
 
   loginApiCall() {
-    this.loginApi = this.httpClient.post('http://193.196.52.237:8081/login', {
+    this.loginApi = this.httpClient.post('http://193.196.52.237:8081/authenticate', {
       "email": this.username,
       "password": this.password
     });
