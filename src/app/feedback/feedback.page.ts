@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { RestService } from '../rest.service';
-import { UserService } from '../services/user.service';
-import { Storage } from '@ionic/storage';
 import { Observable } from 'rxjs';
-import { FeedbackService } from 'src/app/services/feedback.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { RestService } from 'src/app/rest.service';
+import { Storage } from '@ionic/storage';
+import { Router } from '@angular/router';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { ToastService } from '../services/toast.service';
+import { FeedbackService } from '../services/feedback.service';
 
 @Component({
   selector: 'app-feedback',
@@ -13,32 +14,64 @@ import { FeedbackService } from 'src/app/services/feedback.service';
   styleUrls: ['./feedback.page.scss'],
 })
 export class FeedbackPage implements OnInit {
+  public angForm: FormGroup;
+  
+ 
+  
   feedbackApi:  Observable<any>;
   content: "";
   bikeId="";
+  public isDetailsVisible = false;
+ 
+  
+  
+ 
 
-  constructor(private router: Router,
-    public httpClient: HttpClient,
+  constructor(private router: Router, 
+    public httpClient: HttpClient, 
     public restService: RestService,
-    public userService: UserService,
+    private toastService: ToastService,
+    private fb: FormBuilder,
     private storage: Storage,
-    public feedbackService: FeedbackService) { }
+    public feedbackService: FeedbackService) {
+      this.createForm();
+
+     }
 
   ngOnInit() {
   }
+  createForm() {
+    this.angForm = this.fb.group({
+       
+       
+       feedback: ['', [Validators.required ]],
+      
+       
+ 
+   
+    });
+    
+  }
   submitFeedback() {
+    if (this.angForm.invalid) {
+      return;
+  }
+  let Form = JSON.stringify(this.angForm.value);
+  
     this.storage.get('token').then((token) => {
       let url = 'http://193.196.52.237:8081/feedbacks'
-      
+      let Form = JSON.stringify(this.angForm.value);
       const headers = new HttpHeaders().set("Authorization", "Bearer " + token);
-      this.feedbackApi = this.httpClient.post<any>(url, {"content": this.content,"bikeId":this.feedbackService.getBikeid()},{headers});
+      this.feedbackApi = this.httpClient.post<any>(url, {"content": Form,"bikeId":this.feedbackService.getBikeid()},{headers});
       this.feedbackApi.subscribe((resp) => {
         console.log("rides response", resp);
-        
+        this.isDetailsVisible = false;
+        this.router.navigateByUrl('/ridehistory');
         //this.loadingService.hideLoader();
       }, (error) => {console.log(error)
         //this.loadingService.hideLoader();
       });
     });
 }
-}
+  }
+
