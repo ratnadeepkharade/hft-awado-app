@@ -232,7 +232,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
   navigatetoBikeList() {
     this.isDetailsVisible = false;
-    this.ionViewWillEnter();
+    //this.ionViewWillEnter();
   }
 
   enable3DMaps() {
