@@ -30,7 +30,7 @@ export class HomePage implements OnInit, OnDestroy {
   bikeApi: Observable<any>;
 
   public isDetailsVisible = false;
-  public selectedBike = { id: 0 };
+  public selectedBike:any = { id: 0 };
   public distance="";
   public isBikeReserved = false;
 

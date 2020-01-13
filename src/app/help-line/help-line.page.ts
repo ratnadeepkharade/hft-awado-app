@@ -12,4 +12,8 @@ export class HelpLinePage implements OnInit {
   ngOnInit() {
   }
 
+  CallHelpLine() {
+    
+  }
+
 }
