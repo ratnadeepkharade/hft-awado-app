@@ -6,13 +6,12 @@
     <ion-title slot="start">
       Feedback
     </ion-title>
-  
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
         
-          <!--form [formGroup]="angForm" novalidate--><div>
+          <form [formGroup]="angForm" novalidate>
               <ion-grid>
                   <ion-row justify-content-center>
                     <ion-col align-self-center size-md="6" size-lg="5" size-xs="12">
@@ -23,27 +22,23 @@
                     <h3>Feedback</h3>
                    
                   </div>
-                  <div >
+                  
                   <ion-item >
-                  <ion-textarea class="ion-text-content" [(ngModel)]="content" placeholder="Enter Feedback"></ion-textarea>
-                  </ion-item>
+                    
+                    <ion-textarea class="ion-text-content" formControlName="feedback" placeholder="Enter Feedback"></ion-textarea>
+                </ion-item>
+              <div
+                *ngIf="angForm.controls['feedback'].invalid && (angForm.controls['feedback'].dirty || angForm.controls['feedback'].touched)"
+                class="alert-danger"><ion-icon name="alert"></ion-icon>
+                <div *ngIf="angForm.controls['feedback'].errors.required">
+                  Feedback is required.
                 </div>
-             
-               
-            
-              
-
-             
-              
-          
-          
-
-          <div padding>
-            <ion-button  size="large" expand="block" (click)="submitFeedback()">Submit Feedback</ion-button>
-          </div>
+              </div>
+              <div padding>
+                <ion-button  size="large" expand="block" (click)="submitFeedback()">Submit Feedback</ion-button>
+              </div>
         </ion-col>
       </ion-row>
     </ion-grid>
-  </div>
-  <!--/form-->
+  </form>
 </ion-content>
