@@ -478,7 +478,7 @@ export class HirebikePage implements OnInit {
         } else {
           this.intervalRef = setInterval(() => {
             this.sendUsageDataToBackend();
-          }, 300000);
+          }, 20000);
         }
       }, (error) => {
         console.log(error);
@@ -1017,7 +1017,7 @@ export class HirebikePage implements OnInit {
   ionViewDidLeave() {
     console.log("Route: Ion View Left.")
     if (this.mapElement) {
-      this.mapElement.nativeElement.remove();
+      //this.mapElement.nativeElement.remove();
     }
     if (this.intervalRef) {
       clearInterval(this.intervalRef);

@@ -297,7 +297,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   ionViewDidLeave(){
     if(this.mapElement) {
-      this.mapElement.nativeElement.remove();
+      //this.mapElement.nativeElement.remove();
     }
     // if(this.locationService.liveLocationSubject) {
     //   this.locationService.liveLocationSubject.unsubscribe();

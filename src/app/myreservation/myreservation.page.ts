@@ -353,7 +353,7 @@ export class MyreservationPage implements OnInit {
 
   ionViewDidLeave(){
     if(this.mapElement) {
-      this.mapElement.nativeElement.remove();
+      //this.mapElement.nativeElement.remove();
     }
     // if(this.locationService.liveLocationSubject) {
     //   this.locationService.liveLocationSubject.unsubscribe();
