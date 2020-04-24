@@ -71,7 +71,8 @@ export class HirebikePage implements OnInit {
     public alertController: AlertController) {
 
     this.platform = new H.service.Platform({
-      'apikey': 'tiVTgBnPbgV1spie5U2MSy-obhD9r2sGiOCbBzFY2_k'
+      // Api key for HereMaps JS version 
+      'apikey': ''
     });
   }
 
