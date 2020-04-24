@@ -63,7 +63,8 @@ export class MyreservationPage implements OnInit {
     public distanceService: DistanceService,
     public loadingService: LoadingService) {
     this.platform = new H.service.Platform({
-      'apikey': 'tiVTgBnPbgV1spie5U2MSy-obhD9r2sGiOCbBzFY2_k'
+      // Api key for HereMaps JS version 
+      'apikey': ''
     });
     this.mapRouter = this.platform.getRoutingService();
   }
