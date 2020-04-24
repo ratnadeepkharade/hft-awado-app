@@ -47,7 +47,8 @@ export class HereMapComponent implements OnInit {
     private mapDataService: MapDataService) {
 
     this.platform = new H.service.Platform({
-      'apikey': 'tiVTgBnPbgV1spie5U2MSy-obhD9r2sGiOCbBzFY2_k'
+      // Api key for HereMaps JS version 
+      'apikey': ''
     });
 
     let watch = this.geolocation.watchPosition({ enableHighAccuracy: true, maximumAge: 10000 });
